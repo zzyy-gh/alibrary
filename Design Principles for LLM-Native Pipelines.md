@@ -28,9 +28,11 @@ The documentation hierarchy mirrors the responsibility hierarchy. Each layer own
 - **Agent files** describe processes. They are the *only* place that manages subagents and sequences units. When a workflow breaks, this is where you look.
 - **Skill files** are the most modular units. They describe a single transformation with clear inputs and outputs. They never call other skills. A skill may spawn a subagent internally to contain heavy content, but this is isolation, not orchestration.
 
+The same principle applies to the filesystem: every folder should have a uniform sharing scope. Shared, reusable artifacts live in known shared folders; artifacts specific to a session or run stay local to that subfolder. If a folder mixes shared and local concerns, split it -- when you need something reusable, there should be exactly one place to look.
+
 This strict layering makes the system safer to scale. Adding a skill can't introduce orchestration complexity. Adding an agent can't pollute project-level docs.
 
-**Agents never nest.** Subagents cannot spawn their own subagents, so nesting would break at runtime. But this constraint is also good architecture -- it forces a flat execution model. When you need multi-agent coordination, compose at the team level: multiple independent agents running in parallel, each owning its own pipeline. This avoids the debugging nightmare of deeply nested agent chains and keeps the mental model simple: one agent, one process, one level of delegation.
+**Agents are flat and non-overlapping.** Subagents cannot spawn their own subagents, so nesting would break at runtime -- but this is a feature, not a limitation. A flat execution model keeps the mental model simple: one agent, one pipeline, one level of delegation. When you need multi-agent coordination, compose at the team level with independent agents running in parallel. Ownership matters just as much as structure. Each agent owns a distinct process; if two agents could handle the same trigger, one of them shouldn't exist. Merge them or sharpen the boundary until there's exactly one place to look when a workflow breaks and exactly one place to change when it needs to evolve.
 
 ## 4. Contracts over coupling
 
