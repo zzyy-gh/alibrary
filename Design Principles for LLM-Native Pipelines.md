@@ -1,6 +1,6 @@
 # Design Principles for LLM-Native Pipelines
 
-Core concepts for building multi-step workflows where an LLM is the runtime, not a component.
+Core concepts for building multi-step workflows where an LLM is the runtime, not a component. Original in arrangement, derivative in every other way.
 
 ## 1. Prose as program
 
