@@ -1,0 +1,1 @@
+- [ ] Simplify knowledge-library-plan.md — reduce over-specification and remove micromanagement of implementation details where possible
