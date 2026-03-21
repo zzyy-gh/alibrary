@@ -10,7 +10,7 @@ The build is structured in four phases. Each phase produces a working system; la
 Get the storage layer and the indexer working. The library can accept knowledge and store it.
 
 - [x] **Folder initialisation:** Create the top-level folders (`/inbox/`, `/nuggets/`, `/relationships/`). Initialise Git for version control.
-- [ ] **Multi-agent pipeline patterns:** Research and document patterns for multi-LLM agent coordination (agent teams, subagents, hooks, observers). Separate `meta/` file drawing from `design-principles.md` and external frameworks. Informs how agents, skills, and runtime hooks are structured.
+- [ ] **Responsibility patterns:** Research and document patterns for dividing work across multiple LLM agents (specialization, delegation, observation, pipelines). Separate `meta/` file drawing from `design-principles.md` and external frameworks. Informs how agents, skills, and runtime hooks are structured.
 - [ ] **Update meta:** Update meta and claude.md based on new design principles and agent patterns.
 - [ ] **Setup hooks:** Design and setup hooks for meta changes.
 - [ ] **Event queue setup:** Create a SQLite database with an events table for agent coordination.
@@ -50,7 +50,7 @@ Advanced features that make the library proactively useful.
 
 ## Post-Phase 4
 
-- [ ] **Move generic docs to inbox:** `meta/design-principles.md`, `meta/agent-composition.md`, `meta/agent-flattening.md` and `meta/multi-agent-patterns.md` are too generic for library-specific governance — move them to `/inbox/` as raw source material. Update references in `meta/agents.md`, `meta/runtime-guide.md`, and the respective agent documentations to point to their new location.
+- [ ] **Move generic docs to inbox:** `meta/design-principles.md`, `meta/agent-composition.md`, `meta/agent-flattening.md` and `meta/responsibility-patterns.md` are too generic for library-specific governance — move them to `/inbox/` as raw source material. Update references in `meta/agents.md`, `meta/runtime-guide.md`, and the respective agent documentations to point to their new location.
 
 ## Next Steps
 

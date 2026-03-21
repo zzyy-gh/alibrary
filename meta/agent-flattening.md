@@ -1,6 +1,6 @@
 # Agent Flattening
 
-Companion to `agent-composition.md` (the rules) and `design-principles.md` (foundational principles).
+Companion to `agent-composition.md` (the rules), `design-principles.md` (foundational principles), and `responsibility-patterns.md` (how to divide work across agents).
 
 Flattening is the process of restructuring a standalone agent so it can work as a teammate or subagent. A standalone agent may rely on forked skills, assume full context, or hardcode orchestration — all things that break in team roles, where the agent can't spawn subagents and has a constrained context window.
 
