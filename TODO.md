@@ -11,6 +11,8 @@ Get the storage layer and the indexer working. The library can accept knowledge 
 
 - [x] **Folder initialisation:** Create the top-level folders (`/inbox/`, `/nuggets/`, `/relationships/`). Initialise Git for version control.
 - [ ] **Multi-agent pipeline patterns:** Research and document patterns for multi-LLM agent coordination (agent teams, subagents, hooks, observers). Separate `meta/` file drawing from `design-principles.md` and external frameworks. Informs how agents, skills, and runtime hooks are structured.
+- [ ] **Update meta:** Update meta and claude.md based on new design principles and agent patterns.
+- [ ] **Setup hooks:** Design and setup hooks for meta changes.
 - [ ] **Event queue setup:** Create a SQLite database with an events table for agent coordination.
 - [ ] **Indexer agent v1:** Build a minimal indexer that catalogues raw items and synthesizes initial nuggets per `meta/schemas.md`.
 - [ ] **CLI interface:** A simple command-line tool for ingesting raw items (writes to `/inbox/` or calls the indexer directly) and querying nuggets by tag or keyword. This is the initial human interface.
@@ -45,6 +47,10 @@ Advanced features that make the library proactively useful.
 - [ ] **Intern agent v1:** Build the observation loop per the Intern spec in `meta/agents.md`. Start with query-pattern analysis and tag/relationship quality. Produces typed recommendations into a review queue.
 - [ ] **Recommendations queue & review UI:** Approve, reject, or defer intern recommendations. Includes weekly health report. Accepted recommendations become librarian tasks. Threshold alerts on metric breaches.
 - **Deliverable:** The library is a self-improving, self-aware knowledge system with proactive gap filling, quality management, user-prompted governance/agent updates, and a complete feedback loop from outcomes back to source nuggets via the intern.
+
+## Post-Phase 4
+
+- [ ] **Move generic docs to inbox:** `meta/design-principles.md`, `meta/agent-composition.md`, `meta/agent-flattening.md` and `meta/multi-agent-patterns.md` are too generic for library-specific governance — move them to `/inbox/` as raw source material. Update references in `meta/agents.md`, `meta/runtime-guide.md`, and the respective agent documentations to point to their new location.
 
 ## Next Steps
 

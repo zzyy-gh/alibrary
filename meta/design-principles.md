@@ -22,17 +22,11 @@ The single most consequential design decision: state lives on disk, not in the L
 
 ## 3. Layered ownership, flat execution
 
-The documentation hierarchy mirrors the responsibility hierarchy. Each layer owns exactly one concern:
+The documentation hierarchy mirrors the responsibility hierarchy. Each layer owns exactly one concern: project files describe structure, agent files describe processes, skill files describe transformations. Keep orchestration flat — the orchestrator spawns workers, workers don't spawn their own workers.
 
-- **Project file** (e.g., CLAUDE.md) is the map. It describes structure, conventions, and culture. It never orchestrates work or spawns subagents.
-- **Agent files** describe processes. They are the *only* place that manages subagents and sequences units. When a workflow breaks, this is where you look.
-- **Skill files** are the most modular units. They describe a single transformation with clear inputs and outputs. They never call other skills. A skill may spawn a subagent internally to contain heavy content, but this is isolation, not orchestration.
+The same principle applies to the filesystem: every folder should have a uniform sharing scope. Shared, reusable artifacts live in known shared folders; artifacts specific to a session or run stay local to that subfolder. If a folder mixes shared and local concerns, split it.
 
-The same principle applies to the filesystem: every folder should have a uniform sharing scope. Shared, reusable artifacts live in known shared folders; artifacts specific to a session or run stay local to that subfolder. If a folder mixes shared and local concerns, split it -- when you need something reusable, there should be exactly one place to look.
-
-This strict layering makes the system safer to scale. Adding a skill can't introduce orchestration complexity. Adding an agent can't pollute project-level docs.
-
-**Agents are flat and non-overlapping.** Subagents cannot spawn their own subagents, so nesting would break at runtime -- but this is a feature, not a limitation. A flat execution model keeps the mental model simple: one agent, one pipeline, one level of delegation. When you need multi-agent coordination, compose at the team level with independent agents running in parallel. Ownership matters just as much as structure. Each agent owns a distinct process; if two agents could handle the same trigger, one of them shouldn't exist. Merge them or sharpen the boundary until there's exactly one place to look when a workflow breaks and exactly one place to change when it needs to evolve.
+For agent composition (personas, teammates, skills, forked skills, no-nesting) see `agent-composition.md`. For making agents team-ready, see `agent-flattening.md`.
 
 ## 4. Contracts over coupling
 
