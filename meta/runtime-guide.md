@@ -45,11 +45,15 @@ Claude Code organises all operational configuration under `.claude/`:
 | `.claude/agents/{name}/AGENT.md` | Agent orchestration. Each agent has an `AGENT.md` defining its pipeline: triggers, skills wired, execution order. |
 | `.claude/skills/{name}/SKILL.md` | Skill modules. Each skill has a `SKILL.md` defining one atomic transformation: input, output, constraints. Skills never call other skills. May include `assets/` and `examples/` subdirectories. |
 | `.claude/scripts/` | Utility scripts invoked by agents or skills (e.g. notifications, data transforms, external API calls). |
-| `.claude/settings.json` | MCP servers, permissions, environment configuration. |
+| `.claude/settings.json` | MCP servers, permissions, hooks, environment configuration. |
 
 The `AGENT.md` files are the executable implementation of the agent specifications in `agents.md`. They translate governance-level design ("the librarian enriches stubs") into runtime-level instructions ("run the synthesize-nugget skill on each stub nugget, then run score-quality").
 
 The `SKILL.md` files implement the skills listed in the skill mapping table above. Each skill honours an input/output contract — the skill doesn't know which agent called it.
+
+### Hooks
+
+Hooks are automated checks configured in `.claude/settings.json`. A `PostToolUse` agent hook monitors the `meta/` folder — any `Write` or `Edit` triggers a coherence check across all meta files, validating cross-references, terminology, structure, and logic consistency.
 
 ## Other Runtimes
 

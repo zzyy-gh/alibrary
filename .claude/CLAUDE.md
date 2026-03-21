@@ -23,7 +23,7 @@ alibrary/
 │   ├── agents/        # Agent orchestration (AGENT.md per agent)
 │   ├── skills/        # Skill modules (SKILL.md per skill)
 │   ├── scripts/       # Utility scripts (notifications, data transforms, external APIs)
-│   └── settings.json  # MCP servers, permissions, environment
+│   └── settings.json  # MCP servers, permissions, hooks, environment
 └── TODO.md            # Implementation phases and next steps
 ```
 
@@ -41,6 +41,10 @@ Four agents maintain the library (see `meta/agents.md` for full specs):
 - **Intern** — read-only observer, surfaces institutional learning recommendations
 
 For skill mapping, scripts, and deployment across runtimes, see `meta/runtime-guide.md`.
+
+## Hooks
+
+A `PostToolUse` agent hook monitors the `meta/` folder. Any `Write` or `Edit` to a meta file triggers a coherence check across all meta files — validating cross-references, terminology, structure, and logic consistency. See `meta/runtime-guide.md` § Hooks for details.
 
 ## Conventions
 

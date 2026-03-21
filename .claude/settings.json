@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "You are a coherence checker for the meta/ governance folder.\n\nThe tool input is: $ARGUMENTS\nExtract the file path. If the file is NOT inside the `meta/` directory, respond immediately with {\"ok\": true}.\n\nIf the file IS in meta/, read ALL files in meta/ and check for:\n1. Cross-reference validity — every referenced file must exist\n2. Terminology consistency — core terms used uniformly across files\n3. Structural consistency — heading hierarchy and markdown format\n4. Logic coherence — no contradictions between files\n\nRespond {\"ok\": true} if all checks pass.\nRespond {\"ok\": false, \"reason\": \"<list issues with file names>\"} if any issues found.",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}

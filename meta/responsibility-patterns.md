@@ -9,10 +9,7 @@ Framework-agnostic — these are structural patterns that apply regardless of ru
 ## TODO & Open Questions
 
 - [ ] Research external frameworks (CrewAI, AutoGen, LangGraph, OpenAI Swarm, Claude Agent SDK) — extract patterns, not dependencies
-- [ ] Map patterns to concrete library use cases (indexer/librarian/researcher/intern)
-- [ ] Decide which patterns the library actually needs vs. nice-to-have
 - [ ] Write up coherence-checking as a worked example
-- [ ] How does the coherence checker relate to the intern? Fast-path intern, or separate concern?
 - [ ] When does shared-filesystem coordination break down? At what scale do you need a message bus?
 - [ ] Can agents span runtimes (e.g., indexer on Claude Code, researcher on a custom API) and still coordinate through the same event queue?
 - [ ] Are there real-world examples of the multi-team pattern (separate agent teams coordinating on a shared project)?
@@ -30,6 +27,7 @@ Each agent owns a distinct responsibility but discovers the other's work by read
 **Responsibility contract:** Non-overlapping ownership. Each agent reads what others produce but only writes to its own domain.
 
 **Tradeoffs:**
+
 - Simple, debuggable — every state change is inspectable on disk
 - No orchestration framework needed
 - No real-time coordination — agents discover changes asynchronously
@@ -44,6 +42,7 @@ Multiple agents with distinct roles running in parallel toward the same goal. Ea
 **Responsibility contract:** Each agent owns a slice of the problem space. If two agents could do the same thing, merge or split until ownership is unambiguous (see `agent-composition.md` §5).
 
 **Tradeoffs:**
+
 - High throughput — work happens in parallel
 - Requires clean separation of concerns
 - Needs a coordination layer (shared filesystem, database) to prevent conflicts
@@ -60,6 +59,7 @@ Agents run in sequence. Each stage owns a transformation; the output of one beco
 **Responsibility contract:** Each stage owns one transformation. The handoff artifact is the contract — agent A writes to a known path, agent B reads from it.
 
 **Tradeoffs:**
+
 - Clear data flow — easy to reason about and debug
 - Each stage can be optimised independently (fast model for classification, large model for synthesis)
 - Bottlenecked by the slowest stage
@@ -74,6 +74,7 @@ A parent agent delegates a subtask to a child in an isolated context. The parent
 **Responsibility contract:** The parent defines the scope; the child executes within it. The child writes output to a known location; the parent reads it and continues. See also `agent-flattening.md` §Splitting for how to prepare agents for this pattern.
 
 **Tradeoffs:**
+
 - Lightweight — cheaper to spawn than a full agent; no persistent state, no event queue
 - Context isolation — heavy content stays in the child's context, not the parent's
 - One level only — children should not spawn their own children (flat execution per `agent-composition.md` §4)
@@ -85,11 +86,12 @@ A parent agent delegates a subtask to a child in an isolated context. The parent
 
 ### 5. Observation (read-only oversight)
 
-A dedicated agent with broad visibility but no write access. Its responsibility is meta-level — watching how other agents exercise *their* responsibilities and surfacing insights. Never intervenes directly.
+A dedicated agent with broad visibility but no write access. Its responsibility is meta-level — watching how other agents exercise _their_ responsibilities and surfacing insights. Never intervenes directly.
 
 **Responsibility contract:** Permanently read-only by design, not as a temporary limitation. Outputs recommendations into a queue for humans or other agents to review. Giving it write access turns it into another worker and destroys its outsider perspective.
 
 **Tradeoffs:**
+
 - Safe — can't break anything because it can't write
 - Sees cross-cutting patterns that no single operational agent could detect
 - Value comes from outsider perspective
@@ -104,6 +106,7 @@ Multiple independent agent teams, each owning a different domain, working on the
 **Responsibility contract:** Teams own non-overlapping artifact domains. Cross-team interaction happens through well-defined interfaces (queries, shared schemas), not shared agents.
 
 **Tradeoffs:**
+
 - Scales to complex projects with genuinely different workstreams
 - Each team can use different runtimes, models, or schedules
 - Coordination overhead — need clear boundaries for who owns which artifacts
@@ -120,6 +123,7 @@ A pool of agents with overlapping capabilities. Responsibility is assigned dynam
 **Responsibility contract:** Fluid. A dispatcher/router assigns responsibility per-task. Any agent in the pool can handle any task, so ownership is transient.
 
 **Tradeoffs:**
+
 - Flexible — adapts to variable workloads
 - Complex — needs a dispatcher/router and a way to match tasks to capabilities
 - Harder to debug — no fixed agent-to-task mapping
@@ -135,13 +139,13 @@ A pool of agents with overlapping capabilities. Responsibility is assigned dynam
 
 How agents decide when to exercise their responsibilities. These are orthogonal to the patterns above — any pattern can use any trigger model.
 
-| Trigger | Description | Best for |
-|---------|-------------|----------|
-| **Event-driven** | Fires in response to a specific event (e.g., `entry:created`). Reactive — work happens when there's something to do. | Real-time processing, cause-and-effect workflows |
-| **Scheduled** | Runs on a fixed cadence (hourly, daily, weekly). Processes whatever has accumulated. | Batch processing, maintenance tasks, periodic reviews |
-| **On-demand** | Invoked explicitly by a user or another system. | Query interfaces, ad-hoc tasks |
-| **Hook-based** | Fires automatically as a post-action trigger — after a tool call, file edit, commit, or deployment. Tightly coupled to the action that triggered it. | Validation, coherence checking, notifications |
-| **Continuous** | Runs in a loop, polling for changes. Heavier than event-driven but simpler when no event queue exists. | Watching external systems, file watchers |
+| Trigger          | Description                                                                                                                                          | Best for                                              |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| **Event-driven** | Fires in response to a specific event (e.g., `entry:created`). Reactive — work happens when there's something to do.                                 | Real-time processing, cause-and-effect workflows      |
+| **Scheduled**    | Runs on a fixed cadence (hourly, daily, weekly). Processes whatever has accumulated.                                                                 | Batch processing, maintenance tasks, periodic reviews |
+| **On-demand**    | Invoked explicitly by a user or another system.                                                                                                      | Query interfaces, ad-hoc tasks                        |
+| **Hook-based**   | Fires automatically as a post-action trigger — after a tool call, file edit, commit, or deployment. Tightly coupled to the action that triggered it. | Validation, coherence checking, notifications         |
+| **Continuous**   | Runs in a loop, polling for changes. Heavier than event-driven but simpler when no event queue exists.                                               | Watching external systems, file watchers              |
 
 **Hooks vs. events:** Hooks are synchronous post-action triggers (the action waits for the hook to complete). Events are asynchronous (the event is posted and the emitter moves on). Hooks are good for validation gates; events are good for decoupled coordination.
 
