@@ -6,6 +6,7 @@ and datetime helpers. Used by event queue scripts, find_unprocessed, and agents.
 
 import json
 import os
+import re
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -36,6 +37,28 @@ def now_iso() -> str:
 def today_date() -> str:
     """Return current date as YYYY-MM-DD string."""
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def slugify(title: str) -> str:
+    """Convert a title to a filename slug: lowercase, hyphens, no special chars."""
+    slug = title.lower().strip()
+    slug = re.sub(r"[^\w\s-]", "", slug)
+    slug = re.sub(r"[\s_]+", "-", slug)
+    slug = re.sub(r"-+", "-", slug).strip("-")
+    return slug or "untitled"
+
+
+def unique_filepath(directory: Path, slug: str, ext: str = ".md") -> Path:
+    """Return a unique filepath in directory, appending -2, -3, etc. on collision."""
+    fpath = directory / f"{slug}{ext}"
+    if not fpath.exists():
+        return fpath
+    counter = 2
+    while True:
+        fpath = directory / f"{slug}-{counter}{ext}"
+        if not fpath.exists():
+            return fpath
+        counter += 1
 
 
 def parse_frontmatter(filepath: str | Path) -> tuple[dict, str]:

@@ -34,7 +34,8 @@ alibrary/
 │   │   ├── init_db.py          # Initialize SQLite event queue
 │   │   ├── emit_event.py       # Emit events to the queue
 │   │   ├── poll_events.py      # Poll/consume events from the queue
-│   │   └── find_unprocessed.py # Find raw items with no derived-from edge
+│   │   ├── find_unprocessed.py # Find raw items with no derived-from edge
+│   │   └── cli.py             # CLI: ingest raw items, query nuggets, trace provenance
 │   └── settings.json  # MCP servers, permissions, environment
 └── TODO.md            # Implementation phases and next steps
 ```

@@ -22,6 +22,10 @@ Frontmatter fields:
 
 The MD body contains the original content (URL, pasted text, etc.) or a description of the artifact. Vector embeddings are stored in the vector index, not in the file.
 
+## Filename Convention
+
+All content files use slugified titles as filenames: `{slug}.md`. Slugs are lowercase, alphanumeric, with hyphens replacing spaces and special characters removed. Examples: `event-driven-architecture-overview.md`, `python-decorators.md`. If a slug collision occurs, append `-2`, `-3`, etc. This applies to files in `/inbox/`, `/nuggets/`, and any future content directories.
+
 ## Nugget Schema
 
 Nuggets are AI-synthesized insights — always derived from raw items, other nuggets, or a combination. They are standalone: readable and useful without needing to visit their sources.

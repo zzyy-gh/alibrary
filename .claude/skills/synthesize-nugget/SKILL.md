@@ -23,7 +23,7 @@ Synthesize one or more knowledge nuggets from a raw item.
    - `created_at`, `updated_at`: current time
    - `created_by`, `updated_by`: `indexer`
    - `changelog`: initial entry `{timestamp, agent: "indexer", action: "created", diff: null, reason: "Initial synthesis from [raw item title]"}`
-4. Write each nugget as `/nuggets/{uuid}.md` with YAML frontmatter using helpers
+4. Write each nugget as `/nuggets/{slug}.md` (slugified title, see `meta/schemas.md` § Filename Convention) using `slugify()` and `unique_filepath()` from helpers
 5. The body is AI-synthesized knowledge — standalone prose, not a copy of the source
 
 ## Output

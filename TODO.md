@@ -15,7 +15,7 @@ Get the storage layer and the indexer working. The library can accept knowledge 
 - [x] **Setup hooks:** Design and setup hooks for meta changes.
 - [x] **Event queue setup:** Create a SQLite database with an events table for agent coordination.
 - [x] **Indexer agent v1:** Build a minimal indexer that catalogues raw items and synthesizes initial nuggets per `meta/schemas.md`.
-- [ ] **CLI interface:** A simple command-line tool for ingesting raw items (writes to `/inbox/` or calls the indexer directly) and querying nuggets by tag or keyword. This is the initial human interface.
+- [x] **CLI interface:** A simple command-line tool for ingesting raw items (writes to `/inbox/` or calls the indexer directly) and querying nuggets by tag or keyword. This is the initial human interface.
 - **Deliverable:** You can add raw items via CLI, see them catalogued in `/inbox/` with metadata, browse synthesized nuggets in `/nuggets/`, and trace provenance from nuggets back to raw items via relationships.
 
 ### Phase 2 — Retrieval (Week 3–4)
