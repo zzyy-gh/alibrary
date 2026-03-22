@@ -50,7 +50,7 @@ Advanced features that make the library proactively useful.
 
 ## Post-Phase 4
 
-- [ ] **Move generic docs to inbox:** `meta/design-principles.md`, `meta/agent-composition.md`, `meta/agent-flattening.md` and `meta/responsibility-patterns.md` are too generic for library-specific governance — move them to `/inbox/` as raw source material. Update references in `meta/agents.md`, `meta/runtime-guide.md`, and the respective agent documentations to point to their new location.
+- [ ] **Move generic docs to inbox:** `meta/design-principles.md`, `meta/agent-composition.md`, `meta/agent-flattening.md` and `meta/responsibility-patterns.md` are too generic for library-specific governance — move them to `/inbox/` as raw source material. Update references in `meta/agents.md` and the respective agent documentations to point to their new location.
 
 ## Next Steps
 
