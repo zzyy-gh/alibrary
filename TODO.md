@@ -22,11 +22,12 @@ Get the storage layer and the indexer working. The library can accept knowledge 
 
 Get the researcher working. The library can answer questions.
 
-- [ ] **Vector index:** Integrate an embedding model. Generate embeddings for all existing entries. Store in SQLite-vec or Chroma.
-- [ ] **Researcher agent v1:** Build the query interface. Supports tag filtering, semantic search, and graph traversal. Returns results ranked by relevance with maturity/confidence indicators.
-- [ ] **Tool interface:** Expose the researcher as a callable tool that any agent runtime can invoke — not just Claude Code. This is the agent-agnostic query API.
-- [ ] **Gap logging:** When a query returns no results, log a "knowledge:gap" event with the original query.
-- [ ] **Graph exploration:** Interface for traversing the relationship graph within N hops. Neo4j or D3.js force graph for typed relationship exploration.
+- [x] **Vector index:** Integrated OpenAI `text-embedding-3-small` with ChromaDB vector store. `embeddings.py` handles generation, storage, and search.
+- [x] **Researcher agent v1:** Multi-strategy search (tag, semantic, keyword) with maturity-aware confidence. `researcher.py` + `researcher/AGENT.md`.
+- [x] **Tool interface:** MCP stdio server (`mcp_researcher.py`) exposes `library_search`, `library_trace`, `library_graph` tools.
+- [x] **Gap logging:** Integrated into `researcher.py` — emits `knowledge:gap` events on empty results.
+- [x] **Move generic docs to inbox:** Moved `design-principles.md`, `agent-composition.md`, `agent-flattening.md`, `responsibility-patterns.md` to `/inbox/` with raw item frontmatter.
+- [x] **Graph exploration:** `graph_explore.py` with BFS traversal and D3.js force-directed HTML visualization.
 - **Deliverable:** Any agent can query the library and get useful results. Gaps are tracked. Relationships are explorable.
 
 ### Phase 3 — Refinement (Week 5–7)
@@ -47,10 +48,6 @@ Advanced features that make the library proactively useful.
 - [ ] **Intern agent v1:** Build the observation loop per the Intern spec in `meta/agents.md`. Start with query-pattern analysis and tag/relationship quality. Produces typed recommendations into a review queue.
 - [ ] **Recommendations queue & review UI:** Approve, reject, or defer intern recommendations. Includes weekly health report. Accepted recommendations become librarian tasks. Threshold alerts on metric breaches.
 - **Deliverable:** The library is a self-improving, self-aware knowledge system with proactive gap filling, quality management, user-prompted governance/agent updates, and a complete feedback loop from outcomes back to source nuggets via the intern.
-
-## Post-Phase 4
-
-- [ ] **Move generic docs to inbox:** `meta/design-principles.md`, `meta/agent-composition.md`, `meta/agent-flattening.md` and `meta/responsibility-patterns.md` are too generic for library-specific governance — move them to `/inbox/` as raw source material. Update references in `meta/agents.md` and the respective agent documentations to point to their new location.
 
 ## Next Steps
 

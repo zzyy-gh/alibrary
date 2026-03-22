@@ -2,3 +2,5 @@
 __pycache__/
 .claude/scripts/chroma_db/
 graph.html
+embeddings.html
+.env

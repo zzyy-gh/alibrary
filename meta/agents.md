@@ -49,6 +49,7 @@ The librarian is the refinement engine. It operates asynchronously on a schedule
 - **Gap analysis:** Examine the library's shape. Identify domains with thin coverage relative to their importance or usage frequency. Flag gaps for human review or autonomous acquisition.
 - **Staleness management:** Apply decay models by knowledge type. Tech-specific entries decay fast (6–12 months), conceptual entries decay slowly (2–5 years). Re-check entries past their review-by date.
 - **Quality scoring:** Maintain `quality_score` per entry (completeness, accuracy, recency, usage, link health). A key dimension: whether the nugget's assumptions and constraints are explicitly stated — correctness is always relative to stated constraints. Surface the lowest-quality entries for priority attention.
+- **Embedding refresh:** After any content change (enrichment, merge, consolidation, synthesis), regenerate the embedding for affected entries via the **generate-embedding** skill. The vector index stores only IDs and embeddings — stale embeddings cause semantic search to return wrong results.
 
 ### User-Prompted Updates After Refinement
 
@@ -70,6 +71,7 @@ The researcher is the query interface. Other agents and humans talk to the resea
 - **Gap detection:** When a query returns no results or only stubs, log a "knowledge:gap" event. The indexer or librarian can then prioritise acquiring or enriching that area.
 - **Context assembly:** For agents with limited context windows, return concise, pre-digested knowledge — not raw documents. Summarise, extract the relevant section, or provide a structured snippet.
 - **Human-readable generation:** When a human queries the library directly, generate a readable response with narrative, examples, and context — produced on the fly from the inference-optimised nuggets. These outputs are disposable: if the source nuggets change, the document is regenerated. If a human spots an error, the correction goes to the source nugget, not the generated document.
+- **Visualization:** Generate interactive visual representations of the library. Relationship graph visualization shows nodes and typed edges (derived-from, contradicts) as a D3.js force-directed graph. Embedding visualization shows all items plotted in 2D space via t-SNE dimensionality reduction, revealing semantic clusters and gaps. Both produce self-contained HTML files.
 
 ---
 

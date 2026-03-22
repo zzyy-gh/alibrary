@@ -29,23 +29,21 @@ def library_search(query: str, tags: str = "", n: int = 10) -> str:
     Returns:
         JSON string with search results including id, title, maturity, confidence, and file_path.
     """
-    from researcher import search_semantic, search_tags, format_results
+    from researcher import search_semantic, search_tags
 
     root = get_project_root()
     nuggets_dir = root / "nuggets"
     inbox_dir = root / "inbox"
 
     if query:
-        where = None
-        if tags:
-            tag_list = [t.strip() for t in tags.split(",")]
-            if len(tag_list) == 1:
-                where = {"tags": {"$contains": tag_list[0]}}
-            else:
-                where = {"$and": [{"tags": {"$contains": t}} for t in tag_list]}
-
         try:
-            results = search_semantic(query, n=n, where=where)
+            results = search_semantic(query, n=n)
+            # Post-filter by tags if provided
+            if tags:
+                tag_set = set(t.strip().lower() for t in tags.split(","))
+                results = [r for r in results if tag_set.intersection(
+                    set(t.lower() for t in r.get("tags", []))
+                )]
         except Exception as e:
             return json.dumps({"error": str(e)})
     elif tags:
@@ -133,53 +131,11 @@ def library_graph(item_id: str, hops: int = 2) -> str:
     Returns:
         JSON string with connected items and their relationships.
     """
-    try:
-        from graph_explore import explore_graph
-        return explore_graph(item_id, hops)
-    except ImportError:
-        # graph_explore not available yet — fall back to basic relationship lookup
-        relationships = load_all_relationships()
-
-        connected = []
-        visited = {item_id}
-        frontier = [item_id]
-
-        for hop in range(hops):
-            next_frontier = []
-            for current_id in frontier:
-                for rel in relationships:
-                    if rel.get("source_id") == current_id:
-                        target = rel.get("target_id", "")
-                        if target and target not in visited:
-                            visited.add(target)
-                            next_frontier.append(target)
-                            connected.append({
-                                "from": current_id,
-                                "to": target,
-                                "type": rel.get("type", ""),
-                                "note": rel.get("note", ""),
-                                "hop": hop + 1,
-                            })
-                    if rel.get("target_id") == current_id:
-                        source = rel.get("source_id", "")
-                        if source and source not in visited:
-                            visited.add(source)
-                            next_frontier.append(source)
-                            connected.append({
-                                "from": source,
-                                "to": current_id,
-                                "type": rel.get("type", ""),
-                                "note": rel.get("note", ""),
-                                "hop": hop + 1,
-                            })
-            frontier = next_frontier
-
-        return json.dumps({
-            "item_id": item_id,
-            "hops": hops,
-            "edges": connected,
-            "note": "Basic traversal (graph_explore module not available yet)",
-        }, indent=2, ensure_ascii=False)
+    from graph_explore import build_graph, traverse
+    relationships = load_all_relationships()
+    graph = build_graph(relationships)
+    result = traverse(graph, item_id, max_hops=hops)
+    return json.dumps(result, indent=2, ensure_ascii=False)
 
 
 if __name__ == "__main__":

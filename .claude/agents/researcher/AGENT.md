@@ -56,3 +56,24 @@ When assembling context for a response:
 3. Include summaries for quick understanding
 4. Provide file paths so the caller can access full content if needed
 5. Note confidence levels so the caller can assess reliability
+
+## Visualization
+
+Generate interactive visual representations of the library when requested:
+
+1. **Relationship graph** — shows nodes and typed edges (derived-from, contradicts):
+   ```bash
+   python .claude/scripts/graph_explore.py --viz
+   ```
+   Produces `graph.html` — D3.js force-directed graph with nodes colored by type, edges by relationship.
+
+2. **Embedding space** — shows all items in 2D via t-SNE dimensionality reduction:
+   ```bash
+   python .claude/scripts/embeddings.py viz
+   ```
+   Produces `embeddings.html` — scatter plot with items colored by type, sized by maturity. Reveals semantic clusters and coverage gaps.
+
+3. **Text-based graph** — for terminal or agent consumption:
+   ```bash
+   python .claude/scripts/graph_explore.py --all --format text
+   ```

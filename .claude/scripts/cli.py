@@ -17,6 +17,7 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent))
 from helpers import (
     generate_uuid,
     get_project_root,
@@ -228,16 +229,16 @@ def cmd_search(args):
     results = []
 
     if args.query:
-        where = {}
+        results = search_semantic(args.query, n=args.n)
+
+        # Post-filter by tags
         if args.tags:
-            tag_list = [t.strip() for t in args.tags.split(",")]
-            if len(tag_list) == 1:
-                where["tags"] = {"$contains": tag_list[0]}
-            else:
-                where["$and"] = [{"tags": {"$contains": t}} for t in tag_list]
+            tag_set = set(t.strip().lower() for t in args.tags.split(","))
+            results = [r for r in results if tag_set.intersection(
+                set(t.lower() for t in r.get("tags", []))
+            )]
 
-        results = search_semantic(args.query, n=args.n, where=where if where else None)
-
+        # Post-filter by keyword
         if args.keyword:
             kw = args.keyword.lower()
             results = [

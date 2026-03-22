@@ -8,7 +8,7 @@ The library is designed to start simple (local, file-based) and scale up as need
 |-----------|-------------|-------|
 | Content store | Filesystem + Git | Markdown files with frontmatter (inbox, nuggets) and JSON files (relationships). Git provides versioning, diffing, and rollback. This is the canonical store. |
 | Vector index | SQLite-vec / Chroma / Qdrant | Start with SQLite-vec for local. Move to Chroma or Qdrant when dataset exceeds ~50k entries. |
-| Embeddings | Voyage / OpenAI / local model | Generate embeddings via API or local model. Store in the vector index. |
+| Embeddings | Gemini / OpenAI / extensible | Model-agnostic via provider pattern. Default: Gemini `text-embedding-004`. Configured via `EMBEDDING_PROVIDER` in `.env`. |
 | Event queue | SQLite table | A simple "events" table polled by agents. Upgrade to Redis pub-sub when latency matters. |
 | Database (future) | SQLite (local) / PostgreSQL (shared) | Future migration path when file-based storage becomes a bottleneck. Would store node metadata for faster querying. Not required for Phase 1. |
 | Agent runtime | Any LLM agent (Claude Code, Cursor, etc.) | The library is agent-agnostic. Each runtime queries the library through the researcher and manages its own configuration independently. |

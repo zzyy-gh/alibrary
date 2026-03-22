@@ -122,28 +122,42 @@ def search_keyword(keyword: str, nuggets_dir: Path, inbox_dir: Path) -> list[dic
     return results
 
 
-def search_semantic(query: str, n: int = 10, where: dict | None = None) -> list[dict]:
-    """Semantic search via ChromaDB embeddings."""
+def _build_id_lookup(nuggets_dir: Path, inbox_dir: Path) -> dict:
+    """Build a lookup from item ID to parsed file data."""
+    items = _scan_files(nuggets_dir, inbox_dir)
+    return {item["frontmatter"].get("id"): item for item in items if item["frontmatter"].get("id")}
+
+
+def search_semantic(query: str, n: int = 10) -> list[dict]:
+    """Semantic search via ChromaDB embeddings. Resolves metadata from files."""
     from embeddings import search_similar
-    raw_results = search_similar(query, n_results=n, where=where)
+    raw_results = search_similar(query, n_results=n)
+
+    if not raw_results:
+        return []
+
+    root = get_project_root()
+    lookup = _build_id_lookup(root / "nuggets", root / "inbox")
 
     results = []
     for r in raw_results:
-        tags = r.get("tags", "")
-        if isinstance(tags, str):
-            tags = [t.strip() for t in tags.split(",") if t.strip()]
-        maturity = r.get("maturity", "stub")
-        results.append({
-            "id": r.get("id", ""),
-            "title": r.get("title", ""),
-            "maturity": maturity,
-            "confidence_level": MATURITY_CONFIDENCE.get(maturity, "low"),
-            "relevance_score": r.get("relevance_score", 0.0),
-            "summary": "",
-            "tags": tags,
-            "file_path": r.get("file_path", ""),
-            "item_type": r.get("item_type", ""),
-        })
+        item = lookup.get(r["id"])
+        if item:
+            result = _to_result(item, relevance_score=r["relevance_score"])
+            results.append(result)
+        else:
+            # ID in ChromaDB but file not found — stale entry
+            results.append({
+                "id": r["id"],
+                "title": "(unresolved)",
+                "maturity": "",
+                "confidence_level": "low",
+                "relevance_score": r["relevance_score"],
+                "summary": "",
+                "tags": [],
+                "file_path": "",
+                "item_type": "",
+            })
     return results
 
 
@@ -195,42 +209,11 @@ def cmd_search(args):
     results = []
     strategies = []
 
-    # Build ChromaDB where clause from filters
-    where = {}
-    if args.tags:
-        tag_list = [t.strip() for t in args.tags.split(",")]
-        if len(tag_list) == 1:
-            where["tags"] = {"$contains": tag_list[0]}
-        else:
-            where["$and"] = [{"tags": {"$contains": t}} for t in tag_list]
-
-    if args.maturity:
-        if where:
-            existing = where.pop("$and", [])
-            if where:
-                existing.append(where.copy())
-                where.clear()
-            existing.append({"maturity": args.maturity})
-            where["$and"] = existing
-        else:
-            where["maturity"] = args.maturity
-
-    if args.type:
-        if where:
-            existing = where.pop("$and", [])
-            if where:
-                existing.append(where.copy())
-                where.clear()
-            existing.append({"item_type": args.type})
-            where["$and"] = existing
-        else:
-            where["item_type"] = args.type
-
     if args.query:
         strategies.append("semantic")
-        results = search_semantic(args.query, n=args.n, where=where if where else None)
+        results = search_semantic(args.query, n=args.n)
 
-        # If keyword also provided, filter results by keyword match
+        # Post-filter by keyword if provided
         if args.keyword:
             strategies.append("keyword")
             kw = args.keyword.lower()
@@ -253,6 +236,17 @@ def cmd_search(args):
     else:
         print("Error: provide at least --query, --tags, or --keyword", file=sys.stderr)
         sys.exit(1)
+
+    # Post-filter by tags, maturity, type (applied after any search strategy)
+    if args.tags and args.query:
+        tag_set = set(t.strip().lower() for t in args.tags.split(","))
+        results = [r for r in results if tag_set.intersection(
+            set(t.lower() for t in r.get("tags", []))
+        )]
+    if args.maturity:
+        results = [r for r in results if r.get("maturity") == args.maturity]
+    if args.type:
+        results = [r for r in results if r.get("item_type") == args.type]
 
     # Gap logging
     query_text = args.query or args.keyword or (args.tags if args.tags else "")

@@ -1,4 +1,8 @@
 pyyaml
 openai
+google-genai
 chromadb
 mcp
+python-dotenv
+scikit-learn
+pytest
