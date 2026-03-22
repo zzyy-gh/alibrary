@@ -13,8 +13,8 @@ Get the storage layer and the indexer working. The library can accept knowledge 
 - [x] **Responsibility patterns:** Research and document patterns for dividing work across multiple LLM agents (specialization, delegation, observation, pipelines). Separate `meta/` file drawing from `design-principles.md` and external frameworks. Informs how agents, skills, and runtime hooks are structured.
 - [x] **Update meta:** Update meta and claude.md based on new design principles and agent patterns.
 - [x] **Setup hooks:** Design and setup hooks for meta changes.
-- [ ] **Event queue setup:** Create a SQLite database with an events table for agent coordination.
-- [ ] **Indexer agent v1:** Build a minimal indexer that catalogues raw items and synthesizes initial nuggets per `meta/schemas.md`.
+- [x] **Event queue setup:** Create a SQLite database with an events table for agent coordination.
+- [x] **Indexer agent v1:** Build a minimal indexer that catalogues raw items and synthesizes initial nuggets per `meta/schemas.md`.
 - [ ] **CLI interface:** A simple command-line tool for ingesting raw items (writes to `/inbox/` or calls the indexer directly) and querying nuggets by tag or keyword. This is the initial human interface.
 - **Deliverable:** You can add raw items via CLI, see them catalogued in `/inbox/` with metadata, browse synthesized nuggets in `/nuggets/`, and trace provenance from nuggets back to raw items via relationships.
 

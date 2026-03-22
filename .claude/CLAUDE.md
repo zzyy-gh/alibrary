@@ -20,10 +20,22 @@ alibrary/
 ├── relationships/     # Typed edges between items (JSON)
 ├── .claude/           # Claude Code runtime configuration
 │   ├── CLAUDE.md      # This file. Project map.
-│   ├── agents/        # Agent orchestration (AGENT.md per agent)
-│   ├── skills/        # Skill modules (SKILL.md per skill)
-│   ├── scripts/       # Utility scripts (notifications, data transforms, external APIs)
-│   └── settings.json  # MCP servers, permissions, hooks, environment
+│   ├── agents/
+│   │   └── indexer/AGENT.md    # Indexer agent orchestration
+│   ├── skills/
+│   │   ├── coherence-check/    # Validate meta/ and .claude/ coherence
+│   │   ├── validate-frontmatter/ # Validate/repair raw item frontmatter
+│   │   ├── assign-tags/        # Generate tags for items
+│   │   ├── synthesize-nugget/  # Create nuggets from raw items
+│   │   ├── create-relationship/ # Create typed relationship edges
+│   │   └── generate-embedding/ # Stub — Phase 2
+│   ├── scripts/
+│   │   ├── helpers.py          # Shared utilities (UUID, frontmatter, relationships)
+│   │   ├── init_db.py          # Initialize SQLite event queue
+│   │   ├── emit_event.py       # Emit events to the queue
+│   │   ├── poll_events.py      # Poll/consume events from the queue
+│   │   └── find_unprocessed.py # Find raw items with no derived-from edge
+│   └── settings.json  # MCP servers, permissions, environment
 └── TODO.md            # Implementation phases and next steps
 ```
 
@@ -42,9 +54,16 @@ Four agents maintain the library (see `meta/agents.md` for full specs):
 
 For skill mapping, scripts, and deployment across runtimes, see `meta/runtime-guide.md`.
 
-## Hooks
+## Skills
 
-A `PostToolUse` agent hook monitors the `meta/` folder. Any `Write` or `Edit` to a meta file triggers a coherence check across all meta files — validating cross-references, terminology, structure, and logic consistency. See `meta/runtime-guide.md` § Hooks for details.
+Reusable skill modules in `.claude/skills/`. Each has a `SKILL.md` defining input, process, output, and constraints.
+
+- **coherence-check** — Run `/coherence-check` to validate `meta/` and `.claude/` folders. Checks git-diffed files for syntax, structure, and logic coherence.
+- **validate-frontmatter** — Validate and repair YAML frontmatter on raw items in `/inbox/`
+- **assign-tags** — Generate lowercase tags for raw items or nuggets based on content
+- **synthesize-nugget** — Synthesize knowledge nuggets from raw items into `/nuggets/`
+- **create-relationship** — Create typed edges (`derived-from`, `contradicts`) in `/relationships/`
+- **generate-embedding** — Stub for Phase 2 vector embedding generation
 
 ## Conventions
 
