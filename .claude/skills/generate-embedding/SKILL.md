@@ -1,8 +1,6 @@
 # Skill: generate-embedding
 
-Generate a vector embedding for a library item.
-
-**STATUS: STUB — Phase 2 implementation.**
+Generate a vector embedding for a library item and store it in ChromaDB.
 
 ## Input
 
@@ -10,15 +8,23 @@ Generate a vector embedding for a library item.
 
 ## Process
 
-Phase 2 will integrate an embedding model (Voyage / OpenAI / local) and store embeddings in the vector index (SQLite-vec / Chroma).
+Run the embedding script:
 
-Currently: no-op. Log that embedding generation is deferred to Phase 2.
+```bash
+python .claude/scripts/embeddings.py embed --file <path>
+```
+
+This will:
+1. Parse the file's frontmatter and body
+2. Generate an embedding via OpenAI text-embedding-3-small
+3. Upsert the embedding into the ChromaDB vector store
 
 ## Output
 
-- Current: no output (stub)
-- Phase 2: embedding vector stored in vector index
+- Embedding vector stored in ChromaDB (`.claude/scripts/chroma_db/`)
+- Confirmation message printed to stdout
 
 ## Constraints
 
-- Do not block the indexer pipeline — if this fails, continue processing
+- Do not block the indexer pipeline — if this fails, log the error and continue processing
+- Requires `OPENAI_API_KEY` environment variable to be set

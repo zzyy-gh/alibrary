@@ -218,6 +218,47 @@ def cmd_trace(args):
             print(f"    note: {note}")
 
 
+def cmd_search(args):
+    from researcher import search_semantic, search_tags, search_keyword, format_results
+
+    root = get_project_root()
+    nuggets_dir = root / "nuggets"
+    inbox_dir = root / "inbox"
+
+    results = []
+
+    if args.query:
+        where = {}
+        if args.tags:
+            tag_list = [t.strip() for t in args.tags.split(",")]
+            if len(tag_list) == 1:
+                where["tags"] = {"$contains": tag_list[0]}
+            else:
+                where["$and"] = [{"tags": {"$contains": t}} for t in tag_list]
+
+        results = search_semantic(args.query, n=args.n, where=where if where else None)
+
+        if args.keyword:
+            kw = args.keyword.lower()
+            results = [
+                r for r in results
+                if kw in r.get("title", "").lower()
+                or kw in r.get("summary", "").lower()
+            ]
+    elif args.tags:
+        tag_list = [t.strip() for t in args.tags.split(",")]
+        results = search_tags(tag_list, nuggets_dir, inbox_dir)
+        results = results[:args.n]
+    elif args.keyword:
+        results = search_keyword(args.keyword, nuggets_dir, inbox_dir)
+        results = results[:args.n]
+    else:
+        print("Error: provide at least --query, --tags, or --keyword", file=sys.stderr)
+        sys.exit(1)
+
+    print(format_results(results, fmt=args.format))
+
+
 def main():
     parser = argparse.ArgumentParser(description="Knowledge Library CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -240,6 +281,14 @@ def main():
     p_trace = subparsers.add_parser("trace", help="Show provenance for a nugget")
     p_trace.add_argument("nugget_id", help="Nugget ID (full or prefix)")
 
+    # search
+    p_search = subparsers.add_parser("search", help="Multi-strategy search")
+    p_search.add_argument("--query", help="Semantic search query")
+    p_search.add_argument("--tags", help="Comma-separated tags to filter by")
+    p_search.add_argument("--keyword", help="Keyword search in title/summary/body")
+    p_search.add_argument("--n", type=int, default=10, help="Max results (default: 10)")
+    p_search.add_argument("--format", choices=["json", "text"], default="text", help="Output format")
+
     args = parser.parse_args()
 
     if args.command == "ingest":
@@ -251,6 +300,8 @@ def main():
         cmd_query(args)
     elif args.command == "trace":
         cmd_trace(args)
+    elif args.command == "search":
+        cmd_search(args)
 
 
 if __name__ == "__main__":

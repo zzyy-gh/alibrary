@@ -53,8 +53,8 @@ Run skill **create-relationship** for each nugget.
 - If nugget connects to existing nuggets, create additional edges with notes
 - Write relationships to `/relationships/{session_id}.json`
 
-### Step 6: Generate Embedding (stub)
-Run skill **generate-embedding** — currently a no-op, deferred to Phase 2.
+### Step 6: Generate Embedding
+Run skill **generate-embedding** on the raw item AND each nugget created in Step 4.
 
 ### Step 7: Emit Created Events
 For each nugget created:
