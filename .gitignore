@@ -1,2 +1,4 @@
 *.db
 __pycache__/
+.claude/scripts/chroma_db/
+graph.html

@@ -1,3 +1,16 @@
+---
+id: 4b0495e5-a9cc-49b6-9c8a-db3a12f4cf3c
+title: Agent Composition
+source_type: manual
+tags:
+- agents
+- composition
+- skills
+- orchestration
+created_at: 2026-03-22T00:00:00Z
+created_by: migration
+---
+
 # Agent Composition
 
 Rules for structuring agents, skills, and teams. Companion to `design-principles.md` (foundational principles), `agent-flattening.md` (technique for making agents team-ready), and `responsibility-patterns.md` (how to divide work across agents).

@@ -1,3 +1,17 @@
+---
+id: a1c52f39-b946-4af2-91f0-7217920ea127
+title: Responsibility Patterns
+source_type: manual
+tags:
+- agents
+- responsibility
+- patterns
+- coordination
+- multi-agent
+created_at: 2026-03-22T00:00:00Z
+created_by: migration
+---
+
 # Responsibility Patterns
 
 How to divide work across multiple agents. Companion to `agent-composition.md` (structural rules for agents) and `agent-flattening.md` (making agents team-ready). This file answers: given N agents, how do you carve up who does what, when, and how they stay out of each other's way?

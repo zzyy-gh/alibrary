@@ -1,3 +1,16 @@
+---
+id: 5d890b18-69b7-4042-be59-3b0c54e2c417
+title: Agent Flattening
+source_type: manual
+tags:
+- agents
+- flattening
+- teams
+- orchestration
+created_at: 2026-03-22T00:00:00Z
+created_by: migration
+---
+
 # Agent Flattening
 
 Companion to `agent-composition.md` (the rules), `design-principles.md` (foundational principles), and `responsibility-patterns.md` (how to divide work across agents).
