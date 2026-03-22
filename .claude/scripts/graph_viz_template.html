@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowledge Library — Graph Visualization</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #fafafa;
+    color: #333;
+    overflow: hidden;
+  }
+  svg { width: 100vw; height: 100vh; display: block; }
+  .link { fill: none; stroke-width: 1.5px; }
+  .link-label {
+    font-size: 10px;
+    fill: #666;
+    pointer-events: none;
+  }
+  .node-label {
+    font-size: 11px;
+    fill: #333;
+    pointer-events: none;
+  }
+  #detail-panel {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 16px;
+    max-width: 320px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: none;
+    font-size: 13px;
+    line-height: 1.5;
+    z-index: 10;
+  }
+  #detail-panel h3 { margin-bottom: 8px; font-size: 15px; }
+  #detail-panel .field { margin-bottom: 4px; }
+  #detail-panel .field-label { font-weight: 600; color: #555; }
+  #detail-panel .tag {
+    display: inline-block;
+    background: #e8f0fe;
+    color: #1a73e8;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin: 1px 2px;
+    font-size: 11px;
+  }
+  #detail-panel .close-btn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    cursor: pointer;
+    color: #999;
+    font-size: 16px;
+  }
+  #legend {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 12px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  #legend .legend-item { display: flex; align-items: center; margin-bottom: 4px; }
+  #legend .legend-circle {
+    width: 12px; height: 12px; border-radius: 50%;
+    margin-right: 8px; flex-shrink: 0;
+  }
+  #legend .legend-line {
+    width: 20px; height: 2px;
+    margin-right: 8px; flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<svg id="graph"></svg>
+
+<div id="detail-panel">
+  <span class="close-btn" onclick="document.getElementById('detail-panel').style.display='none'">&times;</span>
+  <h3 id="detail-title"></h3>
+  <div class="field"><span class="field-label">ID:</span> <span id="detail-id"></span></div>
+  <div class="field"><span class="field-label">Type:</span> <span id="detail-type"></span></div>
+  <div class="field"><span class="field-label">Maturity:</span> <span id="detail-maturity"></span></div>
+  <div class="field"><span class="field-label">Tags:</span> <span id="detail-tags"></span></div>
+</div>
+
+<div id="legend">
+  <div class="legend-item"><div class="legend-circle" style="background:#4A90D9"></div> Raw item</div>
+  <div class="legend-item"><div class="legend-circle" style="background:#27AE60"></div> Nugget</div>
+  <div class="legend-item"><div class="legend-circle" style="background:#999"></div> Unresolved</div>
+  <div class="legend-item"><div class="legend-line" style="background:#999"></div> derived-from</div>
+  <div class="legend-item"><div class="legend-line" style="background:#E74C3C"></div> contradicts</div>
+</div>
+
+<script>
+const graphData = __GRAPH_DATA__;
+
+const nodeColor = {
+  raw: "#4A90D9",
+  nugget: "#27AE60",
+  unresolved: "#999"
+};
+
+const edgeColor = {
+  "derived-from": "#999",
+  "contradicts": "#E74C3C"
+};
+
+const maturitySize = {
+  stub: 8,
+  summary: 12,
+  detailed: 16,
+  complete: 20
+};
+const defaultSize = 10;
+
+function truncate(s, n) {
+  return s && s.length > n ? s.slice(0, n) + "..." : s;
+}
+
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+const svg = d3.select("#graph");
+
+const g = svg.append("g");
+
+// Zoom and pan
+const zoom = d3.zoom()
+  .scaleExtent([0.1, 5])
+  .on("zoom", (event) => g.attr("transform", event.transform));
+svg.call(zoom);
+
+// Build D3 data
+const nodeMap = {};
+graphData.nodes.forEach((n, i) => { nodeMap[n.id] = i; });
+
+const links = graphData.edges
+  .filter(e => nodeMap[e.source] !== undefined && nodeMap[e.target] !== undefined)
+  .map(e => ({
+    source: e.source,
+    target: e.target,
+    type: e.type,
+    note: e.note
+  }));
+
+const nodes = graphData.nodes.map(n => ({
+  ...n,
+  radius: maturitySize[n.maturity] || defaultSize
+}));
+
+// Arrow markers
+svg.append("defs").selectAll("marker")
+  .data(["derived-from", "contradicts"])
+  .join("marker")
+    .attr("id", d => "arrow-" + d)
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 20)
+    .attr("refY", 0)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+  .append("path")
+    .attr("d", "M0,-5L10,0L0,5")
+    .attr("fill", d => edgeColor[d] || "#999");
+
+const simulation = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d => d.id).distance(120))
+  .force("charge", d3.forceManyBody().strength(-300))
+  .force("center", d3.forceCenter(width / 2, height / 2))
+  .force("collision", d3.forceCollide().radius(d => d.radius + 10));
+
+// Links
+const link = g.append("g")
+  .selectAll("line")
+  .data(links)
+  .join("line")
+    .attr("class", "link")
+    .attr("stroke", d => edgeColor[d.type] || "#999")
+    .attr("marker-end", d => "url(#arrow-" + d.type + ")");
+
+// Edge labels
+const linkLabel = g.append("g")
+  .selectAll("text")
+  .data(links)
+  .join("text")
+    .attr("class", "link-label")
+    .text(d => d.type);
+
+// Nodes
+const node = g.append("g")
+  .selectAll("circle")
+  .data(nodes)
+  .join("circle")
+    .attr("r", d => d.radius)
+    .attr("fill", d => nodeColor[d.item_type] || "#999")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 1.5)
+    .style("cursor", "pointer")
+    .call(d3.drag()
+      .on("start", dragStarted)
+      .on("drag", dragged)
+      .on("end", dragEnded));
+
+node.on("click", (event, d) => {
+  const panel = document.getElementById("detail-panel");
+  document.getElementById("detail-title").textContent = d.title;
+  document.getElementById("detail-id").textContent = d.id;
+  document.getElementById("detail-type").textContent = d.item_type;
+  document.getElementById("detail-maturity").textContent = d.maturity || "n/a";
+  const tagsEl = document.getElementById("detail-tags");
+  tagsEl.innerHTML = (d.tags && d.tags.length)
+    ? d.tags.map(t => '<span class="tag">' + t + '</span>').join(" ")
+    : "none";
+  panel.style.display = "block";
+});
+
+// Node labels
+const nodeLabel = g.append("g")
+  .selectAll("text")
+  .data(nodes)
+  .join("text")
+    .attr("class", "node-label")
+    .attr("dy", d => d.radius + 14)
+    .attr("text-anchor", "middle")
+    .text(d => truncate(d.title, 30));
+
+simulation.on("tick", () => {
+  link
+    .attr("x1", d => d.source.x)
+    .attr("y1", d => d.source.y)
+    .attr("x2", d => d.target.x)
+    .attr("y2", d => d.target.y);
+
+  linkLabel
+    .attr("x", d => (d.source.x + d.target.x) / 2)
+    .attr("y", d => (d.source.y + d.target.y) / 2);
+
+  node
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y);
+
+  nodeLabel
+    .attr("x", d => d.x)
+    .attr("y", d => d.y);
+});
+
+function dragStarted(event) {
+  if (!event.active) simulation.alphaTarget(0.3).restart();
+  event.subject.fx = event.subject.x;
+  event.subject.fy = event.subject.y;
+}
+
+function dragged(event) {
+  event.subject.fx = event.x;
+  event.subject.fy = event.y;
+}
+
+function dragEnded(event) {
+  if (!event.active) simulation.alphaTarget(0);
+  event.subject.fx = null;
+  event.subject.fy = null;
+}
+</script>
+</body>
+</html>

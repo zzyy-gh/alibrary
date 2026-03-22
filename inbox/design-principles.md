@@ -1,3 +1,16 @@
+---
+id: e7ffcd64-fec7-4baf-b6f0-7bbe93b14cbb
+title: Design Principles for LLM-Native Pipelines
+source_type: manual
+tags:
+- llm-native
+- design-principles
+- pipelines
+- architecture
+created_at: 2026-03-22T00:00:00Z
+created_by: migration
+---
+
 # Design Principles for LLM-Native Pipelines
 
 Core concepts for building multi-step workflows where an LLM is the runtime, not a component. Original in arrangement, derivative in every other way.
