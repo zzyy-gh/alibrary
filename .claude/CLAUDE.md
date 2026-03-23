@@ -20,7 +20,8 @@ alibrary/
 │   ├── CLAUDE.md      # This file. Project map.
 │   ├── agents/
 │   │   ├── indexer/AGENT.md    # Indexer agent orchestration
-│   │   └── researcher/AGENT.md # Researcher agent — query interface
+│   │   ├── researcher/AGENT.md # Researcher agent — query interface
+│   │   └── tester/AGENT.md    # Tester agent — docs, scripts, and content verification
 │   ├── skills/
 │   │   ├── coherence-check/    # Validate meta/ and .claude/ coherence
 │   │   ├── validate-frontmatter/ # Validate/repair raw item frontmatter
