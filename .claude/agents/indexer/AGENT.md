@@ -77,6 +77,14 @@ For each nugget created:
 python .claude/scripts/emit_event.py --type "entry:created" --payload '{"id": "<nugget_id>", "source_ids": ["<raw_item_id>"]}' --emitter "indexer"
 ```
 
+### Step 8: Regenerate Visualizations
+Update the HTML visualizations so they reflect the new additions:
+```bash
+python .claude/scripts/graph_explore.py --all --viz
+python .claude/scripts/embeddings.py viz
+```
+This regenerates `graph.html` and `embeddings.html` at the project root.
+
 ## After Processing
 
 Report a summary:
