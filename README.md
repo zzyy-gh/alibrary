@@ -8,9 +8,9 @@ You put raw material in. AI agents turn it into structured, connected knowledge.
 
 - **Ingest anything** — articles, notes, code snippets, meeting notes, research papers. Just drop it in.
 - **Automatic synthesis** — AI agents read your material and create concise, standalone summaries (called "nuggets") that capture the key insights.
-- **Smart connections** — the library automatically discovers how pieces of knowledge relate to each other, building a graph of ideas you can explore.
+- **Smart connections** — the library automatically discovers how pieces of knowledge relate to each other through tags and semantic similarity.
 - **Search by meaning** — ask questions in plain language and get relevant answers ranked by confidence, not just keyword matches.
-- **Visual exploration** — see your knowledge as an interactive graph of connected ideas, or as a map of topics clustered by similarity.
+- **Visual exploration** — see your knowledge as a map of topics clustered by similarity.
 
 ## Who it's for
 
@@ -30,7 +30,7 @@ You put raw material in. AI agents turn it into structured, connected knowledge.
 Four AI agents maintain the library:
 
 - **Indexer** — processes new material as it arrives, creates summaries, finds connections
-- **Researcher** — answers questions by searching across meaning, tags, keywords, and relationships
+- **Researcher** — answers questions by searching across meaning, tags, and keywords
 - **Tester** — verifies that everything stays consistent and correct as the library grows
 - **Librarian** *(coming soon)* — deepens knowledge over time, merges duplicates, fills gaps, manages quality
 - **Intern** *(coming soon)* — observes patterns across the whole system and recommends improvements

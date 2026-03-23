@@ -1,4 +1,3 @@
-import json
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -173,43 +172,3 @@ class TestResolveId:
         assert result is None
 
 
-class TestLoadAllRelationships:
-    def test_multiple_files(self, tmp_path):
-        r1 = [{"source_id": "a", "target_id": "b", "type": "derived-from"}]
-        r2 = [{"source_id": "c", "target_id": "d", "type": "contradicts"}]
-        (tmp_path / "s1.json").write_text(json.dumps(r1), encoding="utf-8")
-        (tmp_path / "s2.json").write_text(json.dumps(r2), encoding="utf-8")
-        result = helpers.load_all_relationships(tmp_path)
-        assert len(result) == 2
-
-    def test_malformed_json(self, tmp_path):
-        (tmp_path / "bad.json").write_text("not json", encoding="utf-8")
-        result = helpers.load_all_relationships(tmp_path)
-        assert result == []
-
-    def test_empty_dir(self, tmp_path):
-        result = helpers.load_all_relationships(tmp_path)
-        assert result == []
-
-    def test_single_dict(self, tmp_path):
-        (tmp_path / "s.json").write_text(json.dumps({"source_id": "a", "target_id": "b"}), encoding="utf-8")
-        result = helpers.load_all_relationships(tmp_path)
-        assert len(result) == 1
-
-
-class TestSaveRelationships:
-    def test_new_file(self, tmp_path):
-        rels = [{"source_id": "a", "target_id": "b", "type": "derived-from"}]
-        fpath = helpers.save_relationships(rels, "session-1", tmp_path)
-        assert fpath.exists()
-        data = json.loads(fpath.read_text(encoding="utf-8"))
-        assert len(data) == 1
-
-    def test_append(self, tmp_path):
-        r1 = [{"source_id": "a", "target_id": "b"}]
-        r2 = [{"source_id": "c", "target_id": "d"}]
-        helpers.save_relationships(r1, "session-1", tmp_path)
-        helpers.save_relationships(r2, "session-1", tmp_path)
-        fpath = tmp_path / "session-1.json"
-        data = json.loads(fpath.read_text(encoding="utf-8"))
-        assert len(data) == 2

@@ -1,11 +1,11 @@
 # Skill: synthesize-nugget
 
-Synthesize one or more knowledge nuggets from a raw item.
+Synthesize knowledge nuggets from multiple related sources. Invoked by the librarian when cross-source patterns are discovered — not for 1:1 summaries of single items.
 
 ## Input
 
-- A file path to a raw item in `/inbox/`
-- The raw item's parsed frontmatter and body content
+- File paths to two or more related items (raw items in `/inbox/` and/or nuggets in `/nuggets/`)
+- Each item's parsed frontmatter and body content
 
 ## Process
 
@@ -21,8 +21,8 @@ Synthesize one or more knowledge nuggets from a raw item.
    - `decay_rate`: `fast` for tech-specific, `medium` for general, `slow` for conceptual
    - `review_by`: today + 7 days for stubs, + 30 days for summaries
    - `created_at`, `updated_at`: current time
-   - `created_by`, `updated_by`: `indexer`
-   - `changelog`: initial entry `{timestamp, agent: "indexer", action: "created", diff: null, reason: "Initial synthesis from [raw item title]"}`
+   - `created_by`, `updated_by`: `librarian`
+   - `changelog`: initial entry `{timestamp, agent: "librarian", action: "created", diff: null, reason: "Cross-source synthesis from [source titles]"}`
 4. Write each nugget as `/nuggets/{slug}.md` (slugified title, see `meta/schemas.md` § Filename Convention) using `slugify()` and `unique_filepath()` from helpers
 5. The body is AI-synthesized knowledge — standalone prose, not a copy of the source
 

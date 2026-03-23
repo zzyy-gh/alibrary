@@ -1,4 +1,3 @@
-import json
 import sys
 from pathlib import Path
 
@@ -11,10 +10,9 @@ from init_db import init_db
 
 @pytest.fixture
 def tmp_project(tmp_path):
-    """Create a temp project structure with inbox/, nuggets/, relationships/."""
+    """Create a temp project structure with inbox/, nuggets/."""
     (tmp_path / "inbox").mkdir()
     (tmp_path / "nuggets").mkdir()
-    (tmp_path / "relationships").mkdir()
     return tmp_path
 
 
@@ -51,23 +49,6 @@ def sample_nugget(tmp_project):
         "created_by": "test",
     }, "Synthesized test content.")
     return fpath, item_id
-
-
-@pytest.fixture
-def sample_relationships(tmp_project, sample_raw_item, sample_nugget):
-    """Write a derived-from relationship and return the relationship list."""
-    _, raw_id = sample_raw_item
-    _, nugget_id = sample_nugget
-    rels = [{
-        "source_id": nugget_id,
-        "target_id": raw_id,
-        "type": "derived-from",
-        "created_at": now_iso(),
-        "created_by": "test",
-    }]
-    fpath = tmp_project / "relationships" / "test-session.json"
-    fpath.write_text(json.dumps(rels), encoding="utf-8")
-    return rels
 
 
 @pytest.fixture

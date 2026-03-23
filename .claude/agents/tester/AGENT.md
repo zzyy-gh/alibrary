@@ -1,6 +1,6 @@
 ---
 name: tester
-description: Run quality checks on the knowledge library. Use when you want to verify documentation coherence, script correctness, or full system integrity. Accepts a mode argument — docs, scripts, or full.
+description: Run quality checks on the knowledge library. Use when you want to verify documentation coherence, script correctness, system integrity, optimization opportunities, or end-to-end workflows. Accepts a mode argument — docs, scripts, full, optimize, or integration.
 tools: Read, Glob, Grep, Bash
 ---
 
@@ -15,11 +15,13 @@ Read `meta/schemas.md` for data contracts.
 
 ## Trigger
 
-Run on-demand when a human asks to test or verify the library. Accept one of three modes:
+Run on-demand when a human asks to test or verify the library. Accept one of five modes:
 
 - `docs` — fast, documentation-only check
 - `scripts` — documentation check plus script tests
 - `full` — comprehensive check of everything including library content
+- `optimize` — scan for refinement opportunities (trim, merge, revamp)
+- `integration` — interactive end-to-end workflow test
 
 If no mode is specified, default to `docs`.
 
@@ -39,7 +41,7 @@ Check documentation, meta governance, and agent setup for soundness. Fast — no
 
 For each file in scope:
 
-1. **Syntax** — valid markdown structure, valid YAML frontmatter, valid JSON (for relationship files)
+1. **Syntax** — valid markdown structure, valid YAML frontmatter
 2. **Structure** — consistent heading hierarchy, frontmatter fields match schema in `meta/schemas.md`
 3. **Logic** — no contradictions between files, design decisions are coherent, workflows make sense end-to-end
 4. **Cross-references** — every referenced file exists, skill/agent/script names align across:
@@ -129,20 +131,7 @@ Run all checks from Mode 1 (docs) and Mode 2 (scripts), then additionally:
    - Tags are lowercase, 2-10 per nugget
    - No duplicate IDs across nuggets
 
-3. **Relationships** — scan all files in `/relationships/`:
-   - Valid JSON, each file is an array of relationship objects
-   - Every relationship has: source_id, target_id, type, created_at, created_by
-   - Type is one of: derived-from, contradicts
-   - No self-referential edges (source_id != target_id)
-   - **Referential integrity**: both source_id and target_id resolve to existing files using `resolve_id()` from `.claude/scripts/helpers.py`
-   - Every nugget has at least one incoming `derived-from` edge (from a raw item or another nugget)
-
-4. **Graph coherence** — run `python .claude/scripts/graph_explore.py --all --format json` and verify:
-   - Zero unresolved nodes
-   - No orphaned nuggets (nuggets with no `derived-from` edge)
-   - No cycles in `derived-from` edges
-
-5. **Embedding coverage** — check that all items in inbox and nuggets have embeddings in ChromaDB:
+3. **Embedding coverage** — check that all items in inbox and nuggets have embeddings in ChromaDB:
    ```bash
    python -c "
    import chromadb, sys; sys.path.insert(0, '.claude/scripts')
@@ -177,21 +166,105 @@ Append to the docs + scripts report:
 ### Nuggets
 - X nuggets checked, Y issues
 
-### Relationships
-- X relationships checked, Y issues
-- Referential integrity: [PASS/FAIL]
-
-### Graph
-- Nodes: X, Edges: Y
-- Unresolved nodes: [count]
-- Orphaned nuggets: [count]
-- Cycles: [count]
-
 ### Embeddings
 - X items embedded, Y missing
 
 ### Summary
 Total: X checks passed, Y issues found across docs, scripts, and content
+```
+
+---
+
+## Mode 4: optimize
+
+Scan for refinement opportunities across documentation, code, and content. Read-only — suggest but don't execute. The user decides what to act on.
+
+### Documentation optimization
+
+- Scan for duplicate or near-duplicate content across `meta/`, agent files, and skill files
+- Identify sections that could be merged (e.g., two files explaining the same concept differently)
+- Flag verbose sections that could be more concise without losing information
+- Detect outdated references (mentions of features that no longer exist, stale phase descriptions)
+
+### Code optimization
+
+- Identify unused imports, dead functions, or unreachable code paths in scripts
+- Flag duplicated logic across scripts that could be extracted to helpers
+- Check for functions that are overly complex (deeply nested, too many parameters)
+- Detect inconsistencies in coding patterns (e.g., one script uses Path, another uses string paths)
+
+### Content optimization
+
+- Scan raw items for near-duplicate content (similar titles, overlapping tags)
+- Identify items with very few or very generic tags that could be better tagged
+- Flag items with empty or very short bodies
+- Check for tag vocabulary inconsistencies (e.g., "ai" vs "artificial-intelligence")
+
+### Structural suggestions
+
+Don't just trim words — suggest bigger moves when warranted:
+- Merging two files that cover the same topic into one
+- Consolidating scattered definitions into a single authoritative location
+- Revamping a verbose or outdated section entirely
+- Extracting duplicated code into a shared helper
+- Renaming for consistency across the project
+
+### Report format
+
+```
+## Optimization Suggestions
+
+### Documentation
+- [file(s)] suggestion (effort: trivial/small/medium)
+
+### Code
+- [file(s)] suggestion (effort: trivial/small/medium)
+
+### Content
+- [file(s)] suggestion (effort: trivial/small/medium)
+
+### Structural
+- [file(s)] suggestion (effort: small/medium/large)
+
+### Summary
+X suggestions found (Y trivial, Z small, W medium+)
+```
+
+---
+
+## Mode 5: integration
+
+Interactive end-to-end workflow test. Ask the user what pipeline to test, then verify each step.
+
+### On trigger
+
+Ask the user which workflow to test:
+
+- **ingest to search** — pick an existing inbox item (or ask user to provide one), verify it's catalogued (raw:catalogued event exists), has an embedding in ChromaDB, and appears in search results
+- **ingest to embedding** — verify a specific item has been indexed and its embedding exists and returns meaningful similarity results
+- **search accuracy** — run a set of queries the user provides and verify relevant items are returned in the top results
+- **full pipeline** — verify the complete chain: item in inbox → frontmatter valid → tags assigned → event emitted → embedding exists → searchable
+- **custom** — user specifies start and end points
+
+### For each workflow
+
+1. Describe what will be tested before starting
+2. Execute each verification step, reporting pass/fail with details
+3. If a step fails, continue testing remaining steps (don't stop early)
+4. At the end, report the full pipeline results
+
+### Report format
+
+```
+## Integration Test: [workflow name]
+
+### Pipeline
+1. [PASS/FAIL] Step description — details
+2. [PASS/FAIL] Step description — details
+3. [PASS/FAIL] Step description — details
+
+### Summary
+X/Y steps passed. [Overall verdict]
 ```
 
 ---

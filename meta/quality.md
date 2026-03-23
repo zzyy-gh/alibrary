@@ -11,7 +11,7 @@ The intern's observation loop is the primary quality check. Weekly, it produces 
 The librarian runs structural and mechanical checks on a fixed cadence. These do not require human judgment:
 
 - **Daily:** Link validation. Hit source URLs on raw items, flag broken or redirected links.
-- **Weekly:** Maturity distribution (percentage of stubs vs enriched nuggets), embedding freshness, orphaned raw items (no `derived-from` edges).
+- **Weekly:** Maturity distribution (percentage of stubs vs enriched nuggets), embedding freshness, uncatalogued raw items (no `raw:catalogued` event).
 - **Monthly:** Tag vocabulary review. Detect inconsistent or redundant tags, propose consolidations.
 
 The librarian self-corrects where confident (e.g. flagging a broken link) and queues for human review where confidence is low (e.g. proposing tag consolidation).

@@ -17,7 +17,6 @@ VALID_EVENT_TYPES = [
     "entry:enriched",
     "entry:merged",
     "entry:consolidated",
-    "relationship:contradicts",
     "entry:stale",
     "link:broken",
     "knowledge:gap",

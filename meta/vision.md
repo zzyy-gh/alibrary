@@ -4,13 +4,13 @@ The Knowledge Library is a persistent, structured, agent-accessible knowledge st
 
 ## Core Principles
 
-- **Ingest raw, synthesize nuggets.** Raw material enters through `/inbox/` in any format — URLs, files, snippets, conversations. The indexer catalogues each raw item with metadata but does not move or reclassify it. Raw items stay in `/inbox/` permanently as source material. Nuggets are always AI-synthesized insights — derived from one or more raw items, from other nuggets, or from a combination. Even a 1:1 derivation produces a distinct nugget, not a relabeled copy. This keeps the ingest barrier low while ensuring that everything in `/nuggets/` represents understood, processed insight.
+- **Ingest raw, synthesize across sources.** Raw material enters through `/inbox/` in any format — URLs, files, snippets, conversations. The indexer catalogues each raw item with metadata and embeddings but does not synthesize or move it. Raw items stay in `/inbox/` permanently as source material. Nuggets are created by the librarian only when cross-source patterns are discovered — combining insights from multiple raw items or existing nuggets into new knowledge that doesn't exist in any single source. This keeps the ingest barrier low while ensuring that everything in `/nuggets/` represents genuine synthesized insight.
 
-- **Flat nuggets, rich connections.** `/nuggets/` is a flat folder — no subfolders, no hierarchy. Organization comes entirely from tags, vector embeddings, and relationships. Discovery is through search and graph traversal, not browsing a tree.
+- **Flat nuggets, rich connections.** `/nuggets/` is a flat folder — no subfolders, no hierarchy. Organization comes entirely from tags and vector embeddings. Discovery is through search, not browsing a tree.
 
-- **Three kinds of content, one system.** Raw items in `/inbox/` are source material. Nuggets in `/nuggets/` are AI-synthesized insights. Relationships in `/relationships/` are independent typed edges providing provenance and semantic links. All three are first-class content with their own schemas and lifecycle — relationships are not metadata on entries, they are standalone entities that grow into the library's most valuable navigational asset as the graph scales.
+- **Two kinds of content, one system.** Raw items in `/inbox/` are source material. Nuggets in `/nuggets/` are AI-synthesized insights. Provenance is tracked in nugget frontmatter via the `sources` field, linking each nugget back to the raw items and nuggets it was synthesized from. Discovery uses tags and vector embeddings.
 
-- **Refinement over accumulation.** A library that only grows becomes a junkyard. The librarian agent continuously merges duplicates, validates links, discovers relationships, and identifies gaps. Quality compounds; clutter compounds too.
+- **Refinement over accumulation.** A library that only grows becomes a junkyard. The librarian agent continuously merges duplicates, validates links, and identifies gaps. Quality compounds; clutter compounds too.
 
 - **Auditability.** Every change is logged with a reason, a timestamp, and the agent that made it. Knowledge can be versioned, reverted, and traced.
 

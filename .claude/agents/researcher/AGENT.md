@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: Query the knowledge library for information. Handles tag-based, semantic, keyword, and graph traversal searches. Invoke when you need to find, retrieve, or explore knowledge in the library.
+description: Query the knowledge library for information. Handles tag-based, semantic, and keyword searches. Invoke when you need to find, retrieve, or explore knowledge in the library.
 tools: Read, Glob, Grep, Bash
 ---
 
@@ -32,12 +32,7 @@ Determine the best search strategy based on the query:
    python .claude/scripts/researcher.py search --query "how does X work"
    ```
 
-3. **Relationship traversal** (e.g., "what is this nugget derived from?"):
-   ```bash
-   python .claude/scripts/graph_explore.py --id ID --hops N
-   ```
-
-4. **Complex queries** — combine strategies:
+3. **Complex queries** — combine strategies:
    ```bash
    python .claude/scripts/researcher.py search --query "topic" --tags tag1 --keyword term --format json
    ```
@@ -67,19 +62,8 @@ When assembling context for a response:
 
 Generate interactive visual representations of the library when requested:
 
-1. **Relationship graph** — shows nodes and typed edges (derived-from, contradicts):
-   ```bash
-   python .claude/scripts/graph_explore.py --viz
-   ```
-   Produces `graph.html` — D3.js force-directed graph with nodes colored by type, edges by relationship.
-
-2. **Embedding space** — shows all items in 2D via t-SNE dimensionality reduction:
+1. **Embedding space** — shows all items in 2D via t-SNE dimensionality reduction:
    ```bash
    python .claude/scripts/embeddings.py viz
    ```
    Produces `embeddings.html` — scatter plot with items colored by type, sized by maturity. Reveals semantic clusters and coverage gaps.
-
-3. **Text-based graph** — for terminal or agent consumption:
-   ```bash
-   python .claude/scripts/graph_explore.py --all --format text
-   ```

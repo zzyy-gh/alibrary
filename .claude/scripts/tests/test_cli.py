@@ -1,13 +1,12 @@
-import json
 import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from types import SimpleNamespace
 
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from helpers import write_frontmatter, generate_uuid, now_iso, parse_frontmatter
+from helpers import write_frontmatter, parse_frontmatter
 
 
 class TestCmdIngest:
@@ -84,25 +83,3 @@ class TestCmdQuery:
         assert "Other" not in output
 
 
-class TestCmdTrace:
-    def test_trace_provenance(self, tmp_project, capsys):
-        raw_id = generate_uuid()
-        nugget_id = generate_uuid()
-
-        write_frontmatter(tmp_project / "inbox" / "raw.md",
-            {"id": raw_id, "title": "Raw Source"}, "raw body")
-        write_frontmatter(tmp_project / "nuggets" / "nug.md",
-            {"id": nugget_id, "title": "Derived Nugget", "maturity": "summary"}, "nugget body")
-
-        rels = [{"source_id": nugget_id, "target_id": raw_id, "type": "derived-from", "created_at": now_iso(), "created_by": "test"}]
-        (tmp_project / "relationships" / "s.json").write_text(json.dumps(rels), encoding="utf-8")
-
-        with patch("cli.get_project_root", return_value=tmp_project), \
-             patch("helpers.get_project_root", return_value=tmp_project):
-            from cli import cmd_trace
-            args = SimpleNamespace(nugget_id=nugget_id)
-            cmd_trace(args)
-
-        output = capsys.readouterr().out
-        assert "Derived Nugget" in output
-        assert "Raw Source" in output

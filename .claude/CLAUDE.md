@@ -9,13 +9,12 @@ alibrary/
 ├── meta/              # Design governance (human-owned, agents read for guidance)
 │   ├── vision.md      # Core principles
 │   ├── architecture.md # Storage, indexing, coordination
-│   ├── schemas.md     # Data contracts (raw items, nuggets, relationships)
+│   ├── schemas.md     # Data contracts (raw items, nuggets)
 │   ├── agents.md      # Agent roles, boundaries, operational specs
 │   ├── quality.md     # QA loops, feedback triggers, success metrics
 │   └── technology.md  # Tech stack, risks & mitigations
 ├── inbox/             # Raw source material (URLs, files, snippets)
 ├── nuggets/           # AI-synthesized insights (flat, no hierarchy)
-├── relationships/     # Typed edges between items (JSON)
 ├── .claude/           # Claude Code runtime configuration
 │   ├── CLAUDE.md      # This file. Project map.
 │   ├── agents/
@@ -27,18 +26,16 @@ alibrary/
 │   │   ├── validate-frontmatter/ # Validate/repair raw item frontmatter
 │   │   ├── assign-tags/        # Generate tags for items
 │   │   ├── synthesize-nugget/  # Create nuggets from raw items
-│   │   ├── create-relationship/ # Create typed relationship edges
-│   │   └── generate-embedding/ # Generate vector embeddings via OpenAI
+│   │   └── generate-embedding/ # Generate vector embeddings via Gemini/OpenAI
 │   ├── scripts/
-│   │   ├── helpers.py          # Shared utilities (UUID, frontmatter, relationships, ID resolution)
+│   │   ├── helpers.py          # Shared utilities (UUID, frontmatter, ID resolution)
 │   │   ├── init_db.py          # Initialize SQLite event queue
 │   │   ├── emit_event.py       # Emit events to the queue
 │   │   ├── poll_events.py      # Poll/consume events from the queue
-│   │   ├── find_unprocessed.py # Find raw items with no derived-from edge
+│   │   ├── find_unprocessed.py # Find uncatalogued raw items
 │   │   ├── cli.py             # CLI: ingest, query, trace, search
 │   │   ├── embeddings.py      # Embedding generation + ChromaDB vector store
 │   │   ├── researcher.py      # Multi-strategy search (tag, semantic, keyword)
-│   │   ├── graph_explore.py   # Relationship graph traversal + visualization
 │   │   └── mcp_researcher.py  # MCP tool server for library search
 │   └── settings.json  # MCP servers, permissions, environment
 └── TODO.md            # Implementation phases and next steps
@@ -52,6 +49,5 @@ All design and architectural decisions live in `meta/`. Start with `meta/vision.
 
 - **Content files:** Markdown with YAML frontmatter
 - **IDs:** UUID for all items (raw items, nuggets)
-- **Relationships:** JSON files in `/relationships/`, append-only per session
 - **Tags:** flat labels, lowercase, 2–10 per item
-- **Nugget discovery:** via tags, vector embeddings, and graph traversal — not folder hierarchy
+- **Nugget discovery:** via tags and vector embeddings — not folder hierarchy

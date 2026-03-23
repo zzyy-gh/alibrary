@@ -1,6 +1,6 @@
 # Schemas
 
-The library contains three kinds of content — raw items, nuggets, and relationships — each with their own schema.
+The library contains two kinds of content — raw items and nuggets — each with their own schema.
 
 ## Raw Item Schema
 
@@ -46,6 +46,7 @@ Frontmatter fields:
 | updated_at | datetime | Last modification timestamp. |
 | created_by | string | Agent or user that created the entry. |
 | updated_by | string | Agent or user that last modified the entry. |
+| sources | string[]? | IDs of raw items/nuggets this was synthesized from. Provenance only — discovery uses embeddings. |
 | changelog | log[] | Array of `{timestamp, agent, action, diff, reason}`. Full audit trail. |
 
 The MD body contains the synthesized knowledge. Always AI-generated insight, not a copy of source material. Vector embeddings are stored in the vector index, not in the file.
@@ -56,33 +57,8 @@ Every nugget progresses through a maturity lifecycle. The maturity level determi
 
 | Level | Definition | Transition Rule |
 |-------|-----------|-----------------|
-| Stub | A minimal synthesized insight — one or two sentences capturing the core idea from the source material. Has `derived-from` relationship(s) but not yet standalone. Typical for initial indexer output. | Indexer sets this on creation. Librarian prioritises enrichment within 7 days. |
+| Stub | A minimal synthesized insight — one or two sentences capturing a cross-source pattern. Has sources listed but not yet standalone. | Librarian sets this on creation. Prioritises enrichment within 7 days. |
 | Summary | Has a 1–3 sentence summary and full tag set. Source has been fetched and read. Not yet standalone. | Librarian upgrades from stub after initial enrichment pass. |
-| Detailed | Full standalone prose. Can be understood without visiting the source. Relationships mapped. Tags refined. | Librarian upgrades after deep enrichment. Entry is now high-confidence for retrieval. |
+| Detailed | Full standalone prose. Can be understood without visiting the source. Tags refined. | Librarian upgrades after deep enrichment. Entry is now high-confidence for retrieval. |
 | Complete | Authoritative entry. Reviewed by human or validated against multiple sources. Regularly maintained. | Requires human review or multi-source validation. Highest confidence tier. |
 
-## Relationship Schema
-
-Relationships are independent, first-class entities — not embedded in nuggets. `derived-from` edges are directional (source → target). `contradicts` edges are bidirectional (stored as a single entry, direction irrelevant). Any raw item with no incoming `derived-from` edge has not yet been synthesized.
-
-Each relationship tuple contains:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| source_id | string | The node this relationship originates from (for `contradicts`, order is irrelevant). |
-| target_id | string | The node this relationship points to. |
-| type | enum | `derived-from` or `contradicts`. |
-| note | string? | Optional free-text annotation explaining the connection. |
-| created_at | datetime | When the relationship was created. |
-| created_by | string | Agent or user that created the relationship. |
-
-## Relationship Types
-
-| Type | Direction | Description |
-|------|-----------|-------------|
-| derived-from | nugget → raw item or nugget | Provenance, dependency, and evolution. "This insight was synthesized from / relies on / evolved from that source." Every nugget must have at least one `derived-from` relationship. Also covers supersession — when a new nugget replaces an older one, the new nugget has a `derived-from` edge to the old one, and the old nugget is marked stale in its own metadata. The `note` field can distinguish provenance ("synthesized from"), dependency ("relies on"), and supersession ("replaces source"). |
-| contradicts | nugget ↔ nugget | Bidirectional. "These two entries make incompatible claims." Always stored as a single edge — direction is irrelevant. Contradictions are not bugs to resolve. Both entries can be independently valid within their own assumptions and context. A contradiction signals an opportunity to synthesize new unifying knowledge that reconciles both perspectives. The librarian may synthesize a new nugget that unifies the contradiction, linked back to both via `derived-from`. |
-
-## Relationship Constraints
-
-Self-referential edges (`source_id == target_id`) are forbidden. `derived-from` must be acyclic — any agent creating relationships must detect and reject cycles. `contradicts` is always bidirectional — a single edge between two nodes, direction is irrelevant. Only one `contradicts` edge should exist between any pair of nodes. Unprocessed raw items are detected by querying for items with no incoming `derived-from` edge — no status flags needed. **Referential integrity:** both `source_id` and `target_id` must reference existing items in the library (`/inbox/` or `/nuggets/`). Relationships pointing to non-existent items are forbidden — they create unresolved nodes in the graph. Always resolve IDs from file frontmatter using `resolve_id()` before writing edges.

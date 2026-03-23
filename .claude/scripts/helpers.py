@@ -1,10 +1,9 @@
 """Shared utilities for the Knowledge Library scripts.
 
-Provides UUID generation, frontmatter parsing/writing, relationship I/O,
+Provides UUID generation, frontmatter parsing/writing,
 and datetime helpers. Used by event queue scripts, find_unprocessed, and agents.
 """
 
-import json
 import os
 import re
 import uuid
@@ -131,46 +130,3 @@ def resolve_id(query: str, project_root: Path | None = None) -> dict | None:
     return None
 
 
-def load_all_relationships(rel_dir: str | Path | None = None) -> list[dict]:
-    """Read all JSON files from /relationships/ and return a flat list of relationship dicts."""
-    if rel_dir is None:
-        rel_dir = get_project_root() / "relationships"
-    rel_dir = Path(rel_dir)
-
-    relationships = []
-    if not rel_dir.is_dir():
-        return relationships
-
-    for fpath in rel_dir.glob("*.json"):
-        try:
-            data = json.loads(fpath.read_text(encoding="utf-8"))
-            if isinstance(data, list):
-                relationships.extend(data)
-            elif isinstance(data, dict):
-                relationships.append(data)
-        except (json.JSONDecodeError, OSError):
-            continue
-
-    return relationships
-
-
-def save_relationships(relationships: list[dict], session_id: str, rel_dir: str | Path | None = None) -> Path:
-    """Write a list of relationship dicts to /relationships/{session_id}.json."""
-    if rel_dir is None:
-        rel_dir = get_project_root() / "relationships"
-    rel_dir = Path(rel_dir)
-    rel_dir.mkdir(parents=True, exist_ok=True)
-
-    fpath = rel_dir / f"{session_id}.json"
-
-    # If file exists, load and extend
-    existing = []
-    if fpath.exists():
-        try:
-            existing = json.loads(fpath.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            existing = []
-
-    existing.extend(relationships)
-    fpath.write_text(json.dumps(existing, indent=2, ensure_ascii=False), encoding="utf-8")
-    return fpath

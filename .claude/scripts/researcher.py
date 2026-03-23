@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from helpers import parse_frontmatter, get_project_root, load_all_relationships, now_iso
+from helpers import parse_frontmatter, get_project_root, now_iso
 from emit_event import emit_event
 from init_db import init_db
 

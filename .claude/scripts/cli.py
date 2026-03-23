@@ -1,6 +1,6 @@
 """Knowledge Library CLI.
 
-Ingest raw items, query nuggets, and trace provenance.
+Ingest raw items and query nuggets.
 
 Usage:
   python .claude/scripts/cli.py ingest --url URL [--title TITLE] [--type TYPE]
@@ -9,7 +9,6 @@ Usage:
   python .claude/scripts/cli.py query --list
   python .claude/scripts/cli.py query --tag TAG [--tag TAG2]
   python .claude/scripts/cli.py query --keyword TERM
-  python .claude/scripts/cli.py trace NUGGET_ID
 """
 
 import argparse
@@ -21,7 +20,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 from helpers import (
     generate_uuid,
     get_project_root,
-    load_all_relationships,
     now_iso,
     parse_frontmatter,
     slugify,
@@ -162,63 +160,6 @@ def cmd_query(args):
         print()
 
 
-def cmd_trace(args):
-    root = get_project_root()
-    nugget_id = args.nugget_id
-
-    # Find the nugget
-    nuggets_dir = root / "nuggets"
-    nugget_file = None
-    for fpath in nuggets_dir.glob("*.md"):
-        try:
-            fm, _ = parse_frontmatter(fpath)
-            if fm.get("id") == nugget_id or fm.get("id", "").startswith(nugget_id):
-                nugget_file = fpath
-                nugget_id = fm["id"]  # resolve partial ID
-                break
-        except Exception:
-            continue
-
-    if not nugget_file:
-        print(f"Nugget not found: {nugget_id}", file=sys.stderr)
-        sys.exit(1)
-
-    fm, _ = parse_frontmatter(nugget_file)
-    print(f"Nugget: {fm.get('title', 'Untitled')}")
-    print(f"ID:     {nugget_id}")
-    print(f"Maturity: {fm.get('maturity', '?')}")
-    print()
-
-    # Load relationships
-    relationships = load_all_relationships()
-    derived = [r for r in relationships if r.get("source_id") == nugget_id and r.get("type") == "derived-from"]
-
-    if not derived:
-        print("No provenance relationships found.")
-        return
-
-    print("Derived from:")
-    for rel in derived:
-        target_id = rel.get("target_id", "?")
-        note = rel.get("note", "")
-
-        # Try to find the source item
-        source_title = target_id[:8] + ".."
-        for d in [root / "inbox", root / "nuggets"]:
-            for fpath in d.glob("*.md"):
-                try:
-                    sfm, _ = parse_frontmatter(fpath)
-                    if sfm.get("id") == target_id:
-                        source_title = sfm.get("title", source_title)
-                        break
-                except Exception:
-                    continue
-
-        print(f"  → {source_title} ({target_id[:8]}..)")
-        if note:
-            print(f"    note: {note}")
-
-
 def cmd_search(args):
     from researcher import search_semantic, search_tags, search_keyword, format_results
 
@@ -278,10 +219,6 @@ def main():
     p_query.add_argument("--keyword", help="Search by keyword in title/summary/body")
     p_query.add_argument("--list", action="store_true", help="List all nuggets")
 
-    # trace
-    p_trace = subparsers.add_parser("trace", help="Show provenance for a nugget")
-    p_trace.add_argument("nugget_id", help="Nugget ID (full or prefix)")
-
     # search
     p_search = subparsers.add_parser("search", help="Multi-strategy search")
     p_search.add_argument("--query", help="Semantic search query")
@@ -299,8 +236,6 @@ def main():
             print("Error: provide --tag, --keyword, or --list", file=sys.stderr)
             sys.exit(1)
         cmd_query(args)
-    elif args.command == "trace":
-        cmd_trace(args)
     elif args.command == "search":
         cmd_search(args)
 

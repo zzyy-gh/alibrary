@@ -47,7 +47,7 @@ Each agent owns a distinct responsibility but discovers the other's work by read
 - No real-time coordination — agents discover changes asynchronously
 - Works well when agents have distinct, non-overlapping responsibilities
 
-**Example:** The knowledge library's four agents coordinate through the filesystem and a SQLite event queue. The indexer writes nuggets; the librarian reads them on its next scheduled run. Ownership is clear: the indexer owns `/inbox/` health and initial synthesis; the librarian owns refinement.
+**Example:** The knowledge library's four agents coordinate through the filesystem and a SQLite event queue. The indexer catalogues raw items; the librarian synthesizes nuggets on its next scheduled run. Ownership is clear: the indexer owns `/inbox/` health and cataloguing; the librarian owns synthesis and refinement.
 
 ### 2. Parallel specialization (agent teams)
 
@@ -62,7 +62,7 @@ Multiple agents with distinct roles running in parallel toward the same goal. Ea
 - Needs a coordination layer (shared filesystem, database) to prevent conflicts
 - Works best when the goal decomposes into independent subtasks
 
-**Example:** After a batch ingest, an indexer team fans out — one agent per raw item — all writing to `/nuggets/` in parallel. No agent waits for another.
+**Example:** After a batch ingest, an indexer team fans out — one agent per raw item — all cataloguing to `/inbox/` in parallel. No agent waits for another.
 
 **Example (Claude Code):** Multiple Claude Code agents running in separate terminals on the same repo, each working on a different file or module.
 
@@ -79,7 +79,7 @@ Agents run in sequence. Each stage owns a transformation; the output of one beco
 - Bottlenecked by the slowest stage
 - Natural fit when there's a strict dependency between stages
 
-**Example:** Raw item → Indexer (catalogue + synthesize) → Librarian (enrich) → Researcher (serve). Each stage produces an artifact the next stage consumes.
+**Example:** Raw item → Indexer (catalogue + embed) → Librarian (synthesize + enrich) → Researcher (serve). Each stage produces an artifact the next stage consumes.
 
 ### 4. Delegation (parent-child)
 
