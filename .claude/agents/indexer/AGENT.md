@@ -48,10 +48,17 @@ Run skill **synthesize-nugget**.
 - Each nugget gets full schema frontmatter per `meta/schemas.md`
 
 ### Step 5: Create Relationships
-Run skill **create-relationship** for each nugget.
-- Create `derived-from` edge: nugget → raw item
-- If nugget connects to existing nuggets, create additional edges with notes
-- Write relationships to `/relationships/{session_id}.json`
+
+For each nugget created:
+
+1. **Source link:** Run skill **create-relationship** to create `derived-from` edge: nugget → raw item
+2. **Cross-reference discovery:**
+   a. List all existing nuggets in `/nuggets/` and read their titles and tags
+   b. For each new nugget, identify existing nuggets with overlapping tags or clearly related titles
+   c. For each candidate match, verify the new nugget genuinely draws on that content
+   d. Look up the exact UUID from the matching nugget's frontmatter using `resolve_id()` from `.claude/scripts/helpers.py` — never guess or construct UUIDs
+   e. Run skill **create-relationship** to create `derived-from` edge with a note explaining the connection
+3. The skill validates all IDs exist before writing — relationships with unresolved IDs are rejected
 
 ### Step 6: Generate Embedding
 Run skill **generate-embedding** on the raw item AND each nugget created in Step 4.

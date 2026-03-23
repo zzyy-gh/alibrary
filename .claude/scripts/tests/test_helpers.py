@@ -120,6 +120,59 @@ class TestWriteFrontmatter:
         assert parsed_body == "Some body text."
 
 
+class TestResolveId:
+    def _create_item(self, directory, item_id, title):
+        """Helper: write a minimal MD file with frontmatter."""
+        fpath = directory / f"{title.lower().replace(' ', '-')}.md"
+        fpath.write_text(
+            f"---\nid: {item_id}\ntitle: {title}\n---\n\nBody.",
+            encoding="utf-8",
+        )
+        return fpath
+
+    def test_by_full_uuid(self, tmp_path):
+        inbox = tmp_path / "inbox"
+        inbox.mkdir()
+        self._create_item(inbox, "aaaa-bbbb-cccc", "Test Item")
+        result = helpers.resolve_id("aaaa-bbbb-cccc", project_root=tmp_path)
+        assert result is not None
+        assert result["id"] == "aaaa-bbbb-cccc"
+        assert result["title"] == "Test Item"
+        assert result["item_type"] == "raw"
+
+    def test_by_uuid_prefix(self, tmp_path):
+        inbox = tmp_path / "inbox"
+        inbox.mkdir()
+        self._create_item(inbox, "aaaa-bbbb-cccc", "Test Item")
+        result = helpers.resolve_id("aaaa", project_root=tmp_path)
+        assert result is not None
+        assert result["id"] == "aaaa-bbbb-cccc"
+
+    def test_by_title(self, tmp_path):
+        nuggets = tmp_path / "nuggets"
+        nuggets.mkdir()
+        self._create_item(nuggets, "xxxx-yyyy", "Agent Composition Rules")
+        result = helpers.resolve_id("Composition Rules", project_root=tmp_path)
+        assert result is not None
+        assert result["title"] == "Agent Composition Rules"
+        assert result["item_type"] == "nugget"
+
+    def test_nonexistent(self, tmp_path):
+        inbox = tmp_path / "inbox"
+        inbox.mkdir()
+        result = helpers.resolve_id("nonexistent", project_root=tmp_path)
+        assert result is None
+
+    def test_ambiguous(self, tmp_path):
+        nuggets = tmp_path / "nuggets"
+        nuggets.mkdir()
+        self._create_item(nuggets, "aaaa-1111", "Agent Alpha")
+        self._create_item(nuggets, "aaaa-2222", "Agent Beta")
+        # Both UUIDs start with "aaaa" — ambiguous
+        result = helpers.resolve_id("aaaa", project_root=tmp_path)
+        assert result is None
+
+
 class TestLoadAllRelationships:
     def test_multiple_files(self, tmp_path):
         r1 = [{"source_id": "a", "target_id": "b", "type": "derived-from"}]

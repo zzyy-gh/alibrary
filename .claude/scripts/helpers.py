@@ -88,6 +88,49 @@ def write_frontmatter(filepath: str | Path, frontmatter: dict, body: str) -> Non
     filepath.write_text(f"---\n{fm_str}---\n\n{body}", encoding="utf-8")
 
 
+def resolve_id(query: str, project_root: Path | None = None) -> dict | None:
+    """Find a library item by UUID (or prefix) or title substring.
+
+    Searches inbox/ and nuggets/. Returns {id, title, item_type, file_path}
+    or None if not found or ambiguous (multiple matches).
+    """
+    if project_root is None:
+        project_root = get_project_root()
+
+    matches = []
+    for folder, item_type in [(project_root / "inbox", "raw"), (project_root / "nuggets", "nugget")]:
+        if not folder.is_dir():
+            continue
+        for fpath in folder.glob("*.md"):
+            if fpath.name == ".gitkeep":
+                continue
+            try:
+                fm, _ = parse_frontmatter(fpath)
+                item_id = str(fm.get("id", ""))
+                item_title = fm.get("title", "")
+
+                if item_id == query or item_id.startswith(query):
+                    matches.append({
+                        "id": item_id,
+                        "title": item_title,
+                        "item_type": item_type,
+                        "file_path": str(fpath),
+                    })
+                elif query.lower() in item_title.lower():
+                    matches.append({
+                        "id": item_id,
+                        "title": item_title,
+                        "item_type": item_type,
+                        "file_path": str(fpath),
+                    })
+            except Exception:
+                continue
+
+    if len(matches) == 1:
+        return matches[0]
+    return None
+
+
 def load_all_relationships(rel_dir: str | Path | None = None) -> list[dict]:
     """Read all JSON files from /relationships/ and return a flat list of relationship dicts."""
     if rel_dir is None:

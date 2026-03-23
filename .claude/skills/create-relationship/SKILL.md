@@ -16,6 +16,7 @@ Create typed relationship edges between library items.
 1. Validate inputs:
    - `source_id` != `target_id` (no self-referential edges)
    - `type` is `derived-from` or `contradicts`
+   - Both `source_id` and `target_id` must resolve to existing files in `/inbox/` or `/nuggets/` — use `resolve_id()` from `.claude/scripts/helpers.py` to verify. **Reject the relationship if either ID is unresolved.**
 2. For `derived-from`: check acyclicity — load existing relationships via `load_all_relationships()` from helpers, verify no path from `target_id` back to `source_id`
 3. For `contradicts`: check no duplicate edge already exists for this pair
 4. Build the relationship tuple with `created_at` via `now_iso()`

@@ -29,7 +29,7 @@ alibrary/
 │   │   ├── create-relationship/ # Create typed relationship edges
 │   │   └── generate-embedding/ # Generate vector embeddings via OpenAI
 │   ├── scripts/
-│   │   ├── helpers.py          # Shared utilities (UUID, frontmatter, relationships)
+│   │   ├── helpers.py          # Shared utilities (UUID, frontmatter, relationships, ID resolution)
 │   │   ├── init_db.py          # Initialize SQLite event queue
 │   │   ├── emit_event.py       # Emit events to the queue
 │   │   ├── poll_events.py      # Poll/consume events from the queue
