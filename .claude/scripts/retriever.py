@@ -1,10 +1,9 @@
 """Multi-strategy search engine for the Knowledge Library.
 
 Supports semantic search (via ChromaDB), tag-based filtering, and keyword search.
-Automatically emits knowledge:gap events when searches return no results.
 
 Usage:
-  python .claude/scripts/researcher.py search --query TEXT [--tags t1,t2] [--keyword TEXT] [--maturity M] [--type raw|nugget] [--n 10] [--format json|text]
+  python .claude/scripts/retriever.py search --query TEXT [--tags t1,t2] [--keyword TEXT] [--maturity M] [--type raw|nugget] [--n 10] [--format json|text]
 """
 
 import argparse
@@ -13,17 +12,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from helpers import parse_frontmatter, get_project_root, now_iso
-from emit_event import emit_event
-from init_db import init_db
+from helpers import parse_frontmatter, get_project_root
 
-
-MATURITY_CONFIDENCE = {
-    "stub": "low",
-    "summary": "medium",
-    "detailed": "high",
-    "complete": "authoritative",
-}
 
 MATURITY_RANK = {
     "stub": 0,
@@ -66,7 +56,6 @@ def _to_result(item: dict, relevance_score: float = 0.0) -> dict:
         "id": fm.get("id", ""),
         "title": fm.get("title", ""),
         "maturity": maturity,
-        "confidence_level": MATURITY_CONFIDENCE.get(maturity, "low"),
         "relevance_score": relevance_score,
         "summary": fm.get("summary", ""),
         "tags": tags,
@@ -151,7 +140,6 @@ def search_semantic(query: str, n: int = 10) -> list[dict]:
                 "id": r["id"],
                 "title": "(unresolved)",
                 "maturity": "",
-                "confidence_level": "low",
                 "relevance_score": r["relevance_score"],
                 "summary": "",
                 "tags": [],
@@ -159,21 +147,6 @@ def search_semantic(query: str, n: int = 10) -> list[dict]:
                 "item_type": "",
             })
     return results
-
-
-def _emit_gap_event(query_text: str, strategies: list[str]) -> None:
-    """Emit a knowledge:gap event when search returns no results."""
-    try:
-        db_path = str(get_project_root() / ".claude" / "scripts" / "library.db")
-        init_db(db_path)
-        payload = json.dumps({
-            "query": query_text,
-            "strategies": strategies,
-            "timestamp": now_iso(),
-        })
-        emit_event(db_path, "knowledge:gap", payload, "researcher")
-    except Exception as e:
-        print(f"Warning: failed to emit gap event: {e}", file=sys.stderr)
 
 
 def format_results(results: list[dict], fmt: str = "text") -> str:
@@ -187,9 +160,8 @@ def format_results(results: list[dict], fmt: str = "text") -> str:
     lines = []
     for r in results:
         score = r.get("relevance_score", 0)
-        confidence = r.get("confidence_level", "low")
         lines.append(f"[{score:.3f}] {r.get('title', '?')} ({r.get('id', '?')[:8]}..)")
-        lines.append(f"         confidence: {confidence}, maturity: {r.get('maturity', '?')}, type: {r.get('item_type', '?')}")
+        lines.append(f"         maturity: {r.get('maturity', '?')}, type: {r.get('item_type', '?')}")
         if r.get("summary"):
             lines.append(f"         {r['summary']}")
         if r.get("tags"):
@@ -247,11 +219,6 @@ def cmd_search(args):
         results = [r for r in results if r.get("maturity") == args.maturity]
     if args.type:
         results = [r for r in results if r.get("item_type") == args.type]
-
-    # Gap logging
-    query_text = args.query or args.keyword or (args.tags if args.tags else "")
-    if not results:
-        _emit_gap_event(query_text, strategies)
 
     print(format_results(results, fmt=args.format))
 

@@ -1,7 +1,7 @@
 """Shared utilities for the Knowledge Library scripts.
 
 Provides UUID generation, frontmatter parsing/writing,
-and datetime helpers. Used by event queue scripts, find_unprocessed, and agents.
+and datetime helpers. Used by find_unprocessed, CLI, and agents.
 """
 
 import os
@@ -16,11 +16,6 @@ import yaml
 def get_project_root() -> Path:
     """Return the project root (alibrary/)."""
     return Path(__file__).resolve().parent.parent.parent
-
-
-def get_db_path() -> Path:
-    """Return the default path to the SQLite database."""
-    return get_project_root() / ".claude" / "scripts" / "library.db"
 
 
 def generate_uuid() -> str:

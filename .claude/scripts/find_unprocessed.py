@@ -1,34 +1,15 @@
 """Find raw items in /inbox/ that have not been processed yet.
 
-An item is considered processed if:
-  1. It has a 'raw:catalogued' event in the SQLite event DB, OR
-  2. Its ID exists in the ChromaDB vector store.
+An item is considered processed if its ID exists in the ChromaDB vector store.
 
 Usage: python .claude/scripts/find_unprocessed.py [--inbox-path PATH]
 """
 
 import argparse
 import json
-import sqlite3
 import sys
 
-from helpers import get_project_root, get_db_path, parse_frontmatter
-
-
-def _has_catalogued_event(db_path: str, item_id: str) -> bool:
-    """Check if item_id has a raw:catalogued event in the SQLite DB."""
-    try:
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT 1 FROM events WHERE event_type = 'raw:catalogued' AND payload LIKE ? LIMIT 1",
-            (f'%{item_id}%',),
-        )
-        found = cursor.fetchone() is not None
-        conn.close()
-        return found
-    except Exception:
-        return False
+from helpers import get_project_root, parse_frontmatter
 
 
 def _exists_in_chromadb(item_id: str) -> bool:
@@ -42,16 +23,13 @@ def _exists_in_chromadb(item_id: str) -> bool:
         return False
 
 
-def find_unprocessed(inbox_dir, db_path: str | None = None) -> list[dict]:
+def find_unprocessed(inbox_dir) -> list[dict]:
     """Return list of {id, file_path} for raw items not yet processed."""
     from pathlib import Path
 
     inbox_dir = Path(inbox_dir)
     if not inbox_dir.is_dir():
         return []
-
-    if db_path is None:
-        db_path = str(get_db_path())
 
     unprocessed = []
     for fpath in sorted(inbox_dir.glob("*.md")):
@@ -64,13 +42,9 @@ def find_unprocessed(inbox_dir, db_path: str | None = None) -> list[dict]:
                 # No ID means never catalogued — definitely unprocessed
                 unprocessed.append({"id": None, "file_path": str(fpath)})
                 continue
-            # Primary check: event DB
-            if _has_catalogued_event(db_path, item_id):
-                continue
-            # Fallback check: ChromaDB
             if _exists_in_chromadb(item_id):
                 continue
-            # Neither — unprocessed
+            # Not in ChromaDB — unprocessed
             unprocessed.append({"id": item_id, "file_path": str(fpath)})
         except Exception:
             unprocessed.append({"id": None, "file_path": str(fpath)})

@@ -215,13 +215,12 @@ def cmd_search(args):
     for r in results:
         score = r.get("relevance_score", 0)
         print(f"[{score:.3f}] {r['id']}")
-    print(f"\n{len(results)} result(s). Use researcher.py for full metadata.")
+    print(f"\n{len(results)} result(s). Use retriever.py for full metadata.")
 
 
 def _resolve_id(item_id: str) -> dict:
     """Resolve an item ID to metadata by scanning inbox/ and nuggets/."""
     root = get_project_root()
-    maturity_confidence = {"stub": "low", "summary": "medium", "detailed": "high", "complete": "authoritative"}
     for d, item_type in [(root / "inbox", "raw"), (root / "nuggets", "nugget")]:
         if not d.is_dir():
             continue
@@ -240,12 +239,11 @@ def _resolve_id(item_id: str) -> dict:
                         "title": fm.get("title", fpath.stem),
                         "item_type": item_type,
                         "maturity": maturity,
-                        "confidence": maturity_confidence.get(maturity, "low"),
                         "tags": tags,
                     }
             except Exception:
                 continue
-    return {"id": item_id, "title": item_id[:12], "item_type": "unknown", "maturity": "stub", "confidence": "low", "tags": ""}
+    return {"id": item_id, "title": item_id[:12], "item_type": "unknown", "maturity": "stub", "tags": ""}
 
 
 def cmd_viz(args):

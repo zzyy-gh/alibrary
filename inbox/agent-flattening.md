@@ -7,8 +7,9 @@ tags:
 - flattening
 - teams
 - orchestration
-created_at: 2026-03-22T00:00:00Z
+created_at: 2026-03-22 00:00:00+00:00
 created_by: migration
+maturity: summary
 ---
 
 # Agent Flattening

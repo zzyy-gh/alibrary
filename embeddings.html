@@ -113,7 +113,7 @@
 </div>
 
 <script>
-const data = [{"id": "4b0495e5-a9cc-49b6-9c8a-db3a12f4cf3c", "title": "Agent Composition", "item_type": "raw", "maturity": "stub", "confidence": "low", "tags": "agents, composition, skills, orchestration", "x": -97.22528839111328, "y": 11.888448715209961}, {"id": "5d890b18-69b7-4042-be59-3b0c54e2c417", "title": "Agent Flattening", "item_type": "raw", "maturity": "stub", "confidence": "low", "tags": "agents, flattening, teams, orchestration", "x": -36.780513763427734, "y": -60.67662811279297}, {"id": "e7ffcd64-fec7-4baf-b6f0-7bbe93b14cbb", "title": "Design Principles for LLM-Native Pipelines", "item_type": "raw", "maturity": "stub", "confidence": "low", "tags": "llm-native, design-principles, pipelines, architecture", "x": 57.938812255859375, "y": -35.53696823120117}, {"id": "a1c52f39-b946-4af2-91f0-7217920ea127", "title": "Responsibility Patterns", "item_type": "raw", "maturity": "stub", "confidence": "low", "tags": "agents, responsibility, patterns, coordination, multi-agent", "x": -57.35993576049805, "y": 101.29277801513672}, {"id": "f36943bd-bd3d-4a7d-a188-4b9e8421b33e", "title": "Useful Custom Agents for Claude Code", "item_type": "raw", "maturity": "stub", "confidence": "low", "tags": "agents, catalog, reference, automation, multi-agent", "x": 24.689424514770508, "y": 53.48566818237305}];
+const data = [{"id": "4b0495e5-a9cc-49b6-9c8a-db3a12f4cf3c", "title": "Agent Composition", "item_type": "raw", "maturity": "stub", "tags": "agents, composition, skills, orchestration", "x": 49.6126823425293, "y": 36.76951217651367}, {"id": "5d890b18-69b7-4042-be59-3b0c54e2c417", "title": "Agent Flattening", "item_type": "raw", "maturity": "summary", "tags": "agents, flattening, teams, orchestration", "x": 10.726404190063477, "y": 64.56095123291016}, {"id": "e7ffcd64-fec7-4baf-b6f0-7bbe93b14cbb", "title": "Design Principles for LLM-Native Pipelines", "item_type": "raw", "maturity": "summary", "tags": "llm-native, design-principles, pipelines, architecture", "x": 53.74551773071289, "y": -12.998530387878418}, {"id": "a1c52f39-b946-4af2-91f0-7217920ea127", "title": "Responsibility Patterns", "item_type": "raw", "maturity": "summary", "tags": "agents, responsibility, patterns, coordination, multi-agent", "x": 0.5124320387840271, "y": 10.646498680114746}, {"id": "f36943bd-bd3d-4a7d-a188-4b9e8421b33e", "title": "Useful Custom Agents for Claude Code", "item_type": "raw", "maturity": "summary", "tags": "agents, catalog, reference, automation, multi-agent", "x": -50.39970779418945, "y": 13.741722106933594}, {"id": "f2999364-f468-4685-99d9-85da22427434", "title": "Improving Vector Search and Knowledge Representation", "item_type": "raw", "maturity": "summary", "tags": "vector-search, embeddings, retrieval, research", "x": 5.015048027038574, "y": -76.9117431640625}, {"id": "vector-search-techniques-2024-2026", "title": "Vector Search Quality & Embedding Effectiveness: Techniques Report (2024-2026)", "item_type": "raw", "maturity": "summary", "tags": "vector-search, embeddings, retrieval, chunking, reranking, hybrid-search, evaluation, RAG", "x": -37.73360824584961, "y": -66.77286529541016}];
 
 // --- State ---
 let activeTags = new Set();
@@ -200,7 +200,7 @@ const circles = g.selectAll("circle")
     .on("mouseover", (event, d) => {
       tooltip.style("opacity", 1)
         .html(`<div class="title">${d.title}</div>
-               <div class="meta">${d.item_type} · ${d.maturity} · ${d.confidence}</div>
+               <div class="meta">${d.item_type} · ${d.maturity}</div>
                <div class="tags">${d.tags}</div>`);
     })
     .on("mousemove", (event) => {
@@ -233,7 +233,7 @@ detail.querySelector(".close").addEventListener("click", () => {
 function showDetail(d) {
   detail.style.display = "block";
   detail.querySelector(".title").textContent = d.title;
-  detail.querySelector(".meta").textContent = `${d.item_type} · ${d.maturity} · ${d.confidence} · ${d.id}`;
+  detail.querySelector(".meta").textContent = `${d.item_type} · ${d.maturity} · ${d.id}`;
   detail.querySelector(".tags").textContent = d.tags;
 }
 

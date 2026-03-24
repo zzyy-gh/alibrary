@@ -19,7 +19,7 @@ alibrary/
 │   ├── CLAUDE.md      # This file. Project map.
 │   ├── agents/
 │   │   ├── indexer/AGENT.md    # Indexer agent orchestration
-│   │   ├── researcher/AGENT.md # Researcher agent — query interface
+│   │   ├── retriever/AGENT.md  # Retriever agent — query interface
 │   │   └── tester/AGENT.md    # Tester agent — docs, scripts, and content verification
 │   ├── skills/
 │   │   ├── coherence-check/    # Validate meta/ and .claude/ coherence
@@ -29,14 +29,11 @@ alibrary/
 │   │   └── generate-embedding/ # Generate vector embeddings via Gemini/OpenAI
 │   ├── scripts/
 │   │   ├── helpers.py          # Shared utilities (UUID, frontmatter, ID resolution)
-│   │   ├── init_db.py          # Initialize SQLite event queue
-│   │   ├── emit_event.py       # Emit events to the queue
-│   │   ├── poll_events.py      # Poll/consume events from the queue
 │   │   ├── find_unprocessed.py # Find uncatalogued raw items
 │   │   ├── cli.py             # CLI: ingest, query, trace, search
 │   │   ├── embeddings.py      # Embedding generation + ChromaDB vector store
-│   │   ├── researcher.py      # Multi-strategy search (tag, semantic, keyword)
-│   │   └── mcp_researcher.py  # MCP tool server for library search
+│   │   ├── retriever.py       # Multi-strategy search (tag, semantic, keyword)
+│   │   └── mcp_retriever.py   # MCP tool server for library search
 │   └── settings.json  # MCP servers, permissions, environment
 └── TODO.md            # Implementation phases and next steps
 ```

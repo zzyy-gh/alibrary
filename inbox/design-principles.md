@@ -7,8 +7,9 @@ tags:
 - design-principles
 - pipelines
 - architecture
-created_at: 2026-03-22T00:00:00Z
+created_at: 2026-03-22 00:00:00+00:00
 created_by: migration
+maturity: summary
 ---
 
 # Design Principles for LLM-Native Pipelines

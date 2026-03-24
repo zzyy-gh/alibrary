@@ -1,9 +1,9 @@
-"""MCP stdio server exposing the Knowledge Library researcher as tools.
+"""MCP stdio server exposing the Knowledge Library retriever as tools.
 
 Provides library_search tool via FastMCP.
 
 Usage:
-  python .claude/scripts/mcp_researcher.py
+  python .claude/scripts/mcp_retriever.py
 """
 
 import json
@@ -27,9 +27,9 @@ def library_search(query: str, tags: str = "", n: int = 10) -> str:
         n: Maximum number of results to return (default 10).
 
     Returns:
-        JSON string with search results including id, title, maturity, confidence, and file_path.
+        JSON string with search results including id, title, maturity, and file_path.
     """
-    from researcher import search_semantic, search_tags
+    from retriever import search_semantic, search_tags
 
     root = get_project_root()
     nuggets_dir = root / "nuggets"

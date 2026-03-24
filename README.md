@@ -1,49 +1,52 @@
 # The Knowledge Library
 
-A living knowledge base that AI agents can read, write, and learn from. Drop in any information — articles, notes, ideas, documents — and the library organizes it, connects it, and makes it searchable.
+A vector database for knowledge — with AI agents that catalogue, search, and synthesize across sources.
+
+At its core, this is a vector database. You put documents in, they get embedded, and you search by meaning. What makes it interesting is the exploration of how knowledge should be represented as vectors — and whether there are better ways than the standard approach.
 
 ## What it does
 
-You put raw material in. AI agents turn it into structured, connected knowledge.
+- **Ingest anything** — articles, notes, code snippets, research papers. Drop it in `/inbox/`.
+- **Embed and search** — content is converted to vectors (Gemini/OpenAI embeddings) and stored in ChromaDB. Search by meaning, tags, or keywords.
+- **Synthesize** — when the librarian finds patterns across multiple sources, it creates nuggets — new knowledge that doesn't exist in any single document.
+- **Visualize** — explore your knowledge as an interactive 2D map of semantic similarity, filterable by tags.
 
-- **Ingest anything** — articles, notes, code snippets, meeting notes, research papers. Just drop it in.
-- **Automatic synthesis** — AI agents read your material and create concise, standalone summaries (called "nuggets") that capture the key insights.
-- **Smart connections** — the library automatically discovers how pieces of knowledge relate to each other through tags and semantic similarity.
-- **Search by meaning** — ask questions in plain language and get relevant answers ranked by confidence, not just keyword matches.
-- **Visual exploration** — see your knowledge as a map of topics clustered by similarity.
+## The research question
 
-## Who it's for
+Standard vector search works: embed text as a single high-dimensional vector, find nearest neighbors by cosine similarity. But there's a lot more to explore:
 
-- **Individuals** building a personal knowledge base that grows smarter over time
-- **Teams** that need a shared source of truth across projects, decisions, and institutional knowledge
-- **AI agent builders** who need a structured knowledge layer their agents can query and contribute to
+**Better retrieval** — hybrid search (BM25 + vectors), cross-encoder reranking, contextual chunking, query expansion. These are proven techniques that improve search quality 15-60%.
 
-## What makes it different
+**Richer representations** — instead of one vector per document, what about multi-facet embeddings (separate vectors per aspect), hyperbolic embeddings (for hierarchical knowledge), or box/region embeddings (concepts as shapes, not points)?
 
-- **Knowledge, not files.** The library doesn't just store documents — it synthesizes understanding from them. Every nugget is a standalone insight, not a copy of the source.
-- **Self-organizing.** Connections between ideas are discovered automatically. You don't need to manually tag, categorize, or link things.
-- **Agent-native.** Built for AI agents to use directly. Any agent can query the library, and the library's own agents maintain and improve the knowledge over time.
-- **Transparent.** Every piece of knowledge traces back to its source. Every change is logged. You can always see where an insight came from and why it was created.
+**Self-improving search** — retrieval systems that learn from usage patterns via reinforcement learning, confidence decay on unused knowledge, and topological gap detection.
 
-## The agents
+**New physical substrates** — quantum-inspired embeddings where ambiguity is literal superposition, neuromorphic associative memory that does pattern completion instead of nearest-neighbor search, and hyperdimensional computing with algebraic vector composition.
 
-Four AI agents maintain the library:
+The library serves as a testbed for these ideas. The current implementation is standard (Gemini embeddings + ChromaDB cosine similarity), but the architecture is designed to swap in different embedding methods, search strategies, and representation approaches.
 
-- **Indexer** — processes new material as it arrives, creates summaries, finds connections
-- **Researcher** — answers questions by searching across meaning, tags, and keywords
-- **Tester** — verifies that everything stays consistent and correct as the library grows
-- **Librarian** *(coming soon)* — deepens knowledge over time, merges duplicates, fills gaps, manages quality
-- **Intern** *(coming soon)* — observes patterns across the whole system and recommends improvements
+## Architecture
+
+Simple: filesystem + ChromaDB.
+
+- `/inbox/` — raw documents (Markdown with YAML frontmatter)
+- `/nuggets/` — AI-synthesized insights from cross-source patterns
+- ChromaDB — vector embeddings for semantic search
+- AI agents — indexer (catalogue), retriever (search), librarian (synthesize), tester (verify)
+
+No application database. No event queue. Git-versioned Markdown is the source of truth.
 
 ## Getting started
 
 ```bash
 pip install -r requirements.txt
-# Add your API key to .env (see .env.example)
+# Add your API key to .env (GEMINI_API_KEY or OPENAI_API_KEY)
 python .claude/scripts/cli.py ingest --text "Your knowledge here" --title "My First Item"
 python .claude/scripts/cli.py search --query "your question"
 ```
 
 ## Learn more
 
-The `meta/` folder contains the full design — start with `meta/vision.md` for principles and `meta/agents.md` for how the agents work.
+- `meta/vision.md` — design principles
+- `meta/agents.md` — how the agents work
+- `inbox/improving-vector-search-and-knowledge-representation.md` — research on better embedding and search techniques

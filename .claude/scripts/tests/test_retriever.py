@@ -7,7 +7,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from helpers import write_frontmatter, generate_uuid, now_iso
-from researcher import _to_result, format_results, search_tags, search_keyword
+from retriever import _to_result, format_results, search_tags, search_keyword
 
 
 class TestToResult:
@@ -22,20 +22,12 @@ class TestToResult:
         assert result["id"] == "abc"
         assert result["title"] == "Test"
         assert result["maturity"] == "summary"
-        assert result["confidence_level"] == "medium"
         assert result["relevance_score"] == 0.8
         assert result["tags"] == ["t1"]
 
-    def test_confidence_levels(self):
-        for maturity, expected in [("stub", "low"), ("summary", "medium"), ("detailed", "high"), ("complete", "authoritative")]:
-            item = {"frontmatter": {"maturity": maturity}, "body": "", "path": "", "item_type": "nugget"}
-            result = _to_result(item)
-            assert result["confidence_level"] == expected
-
-
 class TestFormatResults:
     def test_json(self):
-        results = [{"id": "a", "title": "T", "maturity": "stub", "confidence_level": "low",
+        results = [{"id": "a", "title": "T", "maturity": "stub",
                      "relevance_score": 0.5, "summary": "", "tags": ["x"], "file_path": "/f", "item_type": "nugget"}]
         output = format_results(results, "json")
         parsed = json.loads(output)
@@ -43,7 +35,7 @@ class TestFormatResults:
         assert parsed[0]["id"] == "a"
 
     def test_text(self):
-        results = [{"id": "abc12345", "title": "Test", "maturity": "stub", "confidence_level": "low",
+        results = [{"id": "abc12345", "title": "Test", "maturity": "stub",
                      "relevance_score": 0.5, "summary": "Sum", "tags": ["x"], "file_path": "/f", "item_type": "nugget"}]
         output = format_results(results, "text")
         assert "Test" in output
@@ -103,15 +95,15 @@ class TestSearchSemantic:
         write_frontmatter(tmp_project / "nuggets" / "n.md",
             {"id": "n1", "title": "Nugget", "maturity": "summary", "summary": "S", "tags": ["t"]}, "body")
 
-        with patch("researcher.get_project_root", return_value=tmp_project):
-            from researcher import search_semantic
+        with patch("retriever.get_project_root", return_value=tmp_project):
+            from retriever import search_semantic
             results = search_semantic("query", n=5)
             assert len(results) == 1
             assert results[0]["title"] == "Nugget"
-            assert results[0]["confidence_level"] == "medium"
+            assert results[0]["maturity"] == "summary"
 
     @patch("embeddings.search_similar", return_value=[])
     def test_empty_results(self, mock_search):
-        from researcher import search_semantic
+        from retriever import search_semantic
         results = search_semantic("query")
         assert results == []

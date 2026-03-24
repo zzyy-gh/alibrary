@@ -11,7 +11,7 @@ The intern's observation loop is the primary quality check. Weekly, it produces 
 The librarian runs structural and mechanical checks on a fixed cadence. These do not require human judgment:
 
 - **Daily:** Link validation. Hit source URLs on raw items, flag broken or redirected links.
-- **Weekly:** Maturity distribution (percentage of stubs vs enriched nuggets), embedding freshness, uncatalogued raw items (no `raw:catalogued` event).
+- **Weekly:** Maturity distribution (percentage of stubs vs enriched nuggets), embedding freshness, uncatalogued raw items (no embedding in ChromaDB).
 - **Monthly:** Tag vocabulary review. Detect inconsistent or redundant tags, propose consolidations.
 
 The librarian self-corrects where confident (e.g. flagging a broken link) and queues for human review where confidence is low (e.g. proposing tag consolidation).
@@ -26,19 +26,19 @@ The weekly digest surfaces entries needing attention. The human scans it, confir
 
 ### Trigger 2: Natural Work Corrections
 
-During normal work, an agent uses library knowledge and it gives bad advice. The human notices and flags the error. This feedback enters the event queue as a correction event, and the librarian updates the source nugget. The system should make this feedback path frictionless — one command, one message, one annotation. No context-switching required.
+During normal work, an agent uses library knowledge and it gives bad advice. The human notices and flags the error, and the librarian updates the source nugget on its next run. The system should make this feedback path frictionless — one command, one message, one annotation. No context-switching required.
 
 ### Trigger 3: Threshold Alerts
 
 Automated tripwires that escalate to human attention only when something is measurably off:
 
-- **Researcher hit rate:** Drops below 80%. Indicates widespread content gaps or retrieval degradation.
+- **Retriever hit rate:** Drops below 80%. Indicates widespread content gaps or retrieval degradation.
 - **Intern acceptance rate:** Falls outside the 20–90% band. Below 20% means intern recommendations aren't useful; above 90% means it's being too conservative.
-- **Unresolved gaps:** More than 5 knowledge:gap events in a single domain within 14 days.
+- **Unresolved gaps:** Repeated failed searches in a single domain within 14 days.
 
 ## A/B Experimentation
 
-To empirically discover what "optimised for inference" means for the library's specific agents and domains, the librarian can produce variant versions of a nugget — one denser, one more verbose, one restructured differently — and measure which produces better researcher answers. The intern tracks outcomes over time and learns which refinement patterns tend to improve performance. This builds an evidence base for content design decisions rather than relying on intuition.
+To empirically discover what "optimised for inference" means for the library's specific agents and domains, the librarian can produce variant versions of a nugget — one denser, one more verbose, one restructured differently — and measure which produces better retriever answers. The intern tracks outcomes over time and learns which refinement patterns tend to improve performance. This builds an evidence base for content design decisions rather than relying on intuition.
 
 ## What Humans Contribute
 
@@ -48,11 +48,11 @@ The irreplaceable human inputs are: domain expertise (is this actually correct?)
 
 The following metrics indicate whether the library is healthy and providing value:
 
-- **Retrieval hit rate:** Percentage of researcher queries that return at least one relevant result. Target: >80%.
+- **Retrieval hit rate:** Percentage of retriever queries that return at least one relevant result. Target: >80%.
 - **Maturity distribution:** Percentage of nuggets at each maturity level. Target: <30% stubs after 3 months of librarian operation.
 - **Staleness rate:** Percentage of entries past their review-by date. Target: <10%.
 - **Link health:** Percentage of source URLs on raw items that resolve successfully. Target: >95%.
 - **Duplicate rate:** Number of entries merged per month. Should trend downward as the indexer learns from past merges.
-- **Gap fill rate:** Percentage of "knowledge:gap" events that result in a new entry within 14 days. Target: >50%.
+- **Gap fill rate:** Percentage of identified knowledge gaps that result in a new entry within 14 days. Target: >50%.
 - **Agent adoption:** Number of distinct agents querying the library per week. Indicates whether the library is actually useful in practice.
 - **Intern acceptance rate:** Percentage of intern recommendations that are approved. If too low (<20%), the intern's observation scope or sensitivity needs tuning. If too high (>90%), it may be too conservative. Target: 40–70%.

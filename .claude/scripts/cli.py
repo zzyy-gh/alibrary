@@ -26,10 +26,6 @@ from helpers import (
     unique_filepath,
     write_frontmatter,
 )
-from emit_event import emit_event
-from init_db import init_db
-
-
 VALID_SOURCE_TYPES = ["article", "documentation", "video", "code", "conversation", "manual", "snippet"]
 
 
@@ -79,19 +75,6 @@ def cmd_ingest(args):
     slug = slugify(title)
     fpath = unique_filepath(inbox, slug)
     write_frontmatter(fpath, frontmatter, body)
-
-    # Emit event
-    db_path = str(get_project_root() / ".claude" / "scripts" / "library.db")
-    try:
-        init_db(db_path)
-        emit_event(
-            db_path,
-            "ingest:received",
-            json.dumps({"path": str(fpath), "type": source_type, "id": item_id}),
-            "cli",
-        )
-    except Exception as e:
-        print(f"Warning: event emission failed: {e}", file=sys.stderr)
 
     print(f"Ingested: {fpath}")
     print(f"ID:       {item_id}")
@@ -161,7 +144,7 @@ def cmd_query(args):
 
 
 def cmd_search(args):
-    from researcher import search_semantic, search_tags, search_keyword, format_results
+    from retriever import search_semantic, search_tags, search_keyword, format_results
 
     root = get_project_root()
     nuggets_dir = root / "nuggets"

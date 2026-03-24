@@ -5,7 +5,6 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from helpers import write_frontmatter, generate_uuid, now_iso
-from init_db import init_db
 
 
 @pytest.fixture
@@ -49,11 +48,3 @@ def sample_nugget(tmp_project):
         "created_by": "test",
     }, "Synthesized test content.")
     return fpath, item_id
-
-
-@pytest.fixture
-def db_path(tmp_path):
-    """Create a temp SQLite DB with events table."""
-    path = str(tmp_path / "test.db")
-    init_db(path)
-    return path

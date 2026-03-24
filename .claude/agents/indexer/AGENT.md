@@ -38,21 +38,17 @@ For each unprocessed raw item, execute these steps in order:
 Run skill **validate-frontmatter** on the raw item.
 - Ensure all required fields are present and correctly typed
 - Generate missing UUIDs, timestamps
+- Assess and set `maturity` on the raw item: short snippets or bare URLs get `stub`, longer substantive content gets `summary`
 
 ### Step 2: Assign Tags
 Run skill **assign-tags** on the raw item.
 - Generate 2–5 lowercase tags based on content
 - Update the raw item frontmatter
 
-### Step 3: Emit Catalogued Event
-```bash
-python .claude/scripts/emit_event.py --type "raw:catalogued" --payload '{"id": "<raw_item_id>", "file_path": "<path>", "tags": [<tags>]}' --emitter "indexer"
-```
-
-### Step 4: Generate Embedding
+### Step 3: Generate Embedding
 Run skill **generate-embedding** on the raw item.
 
-### Step 5: Regenerate Visualizations
+### Step 4: Regenerate Visualizations
 Update the HTML visualizations so they reflect the new additions:
 ```bash
 python .claude/scripts/embeddings.py viz

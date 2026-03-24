@@ -1,15 +1,15 @@
 # Agents
 
-Four agents maintain the library. Each has a distinct role, a clear trigger model, and access to the shared library store. The first three — indexer, librarian, researcher — are operational workers with read-write access to the library. The fourth — the intern — is an observer with read-only access, whose role is institutional learning.
+Four agents maintain the library. Each has a distinct role, a clear trigger model, and access to the shared library store. The first three — indexer, librarian, retriever — are operational workers with read-write access to the library. The fourth — the intern — is an observer with read-only access, whose role is institutional learning.
 
 ## Overview
 
 | Agent | Role | Access | Trigger |
 |-------|------|--------|---------|
 | Indexer | Catalogues raw items, assigns tags, generates embeddings. | Read-write content, read-only governance. | New items in `/inbox/`. Must be fast and cheap. |
-| Librarian | Enriches stubs, validates links, merges duplicates, identifies gaps, manages staleness. | Read-write content, read-only governance. | Scheduled (daily/weekly) + event-driven. |
-| Researcher | Handles queries from agents and humans. Determines best retrieval strategy. | Read-write content, read-only governance. | On-demand via tool call or API. |
-| Intern | Observes all system activity, surfaces institutional learning. | Read-only everything. Append-only to recommendations queue. | Periodic (end of day/week) or event-batch. |
+| Librarian | Enriches stubs, validates links, merges duplicates, identifies gaps, manages staleness. | Read-write content, read-only governance. | Scheduled (daily/weekly). |
+| Retriever | Handles queries from agents and humans. Determines best retrieval strategy. | Read-write content, read-only governance. | On-demand via tool call or API. |
+| Intern | Observes all system activity, surfaces institutional learning. | Read-only everything. Append-only to recommendations queue. | Periodic (end of day/week). |
 
 ---
 
@@ -27,7 +27,7 @@ The indexer owns the health of `/inbox/`. On each run, it scans for items with m
 
 ### Catalogue
 
-When new material arrives, the indexer catalogues the raw item: validates frontmatter, assigns tags, generates an embedding, and emits a `raw:catalogued` event. The indexer does not create nuggets — nugget synthesis is the librarian's responsibility, triggered when cross-source patterns are discovered.
+When new material arrives, the indexer catalogues the raw item: validates frontmatter, assigns tags, and generates an embedding. The indexer does not create nuggets — nugget synthesis is the librarian's responsibility, triggered when cross-source patterns are discovered.
 
 The indexer should be optimised for speed — smaller, faster models for classification, separate embedding model for vectors, target under 10 seconds per ingest.
 
@@ -35,7 +35,7 @@ The indexer should be optimised for speed — smaller, faster models for classif
 
 ## Librarian (Curator)
 
-The librarian is the refinement engine. It operates asynchronously on a schedule and through event-driven tasks.
+The librarian is the refinement engine. It operates asynchronously on a schedule and through scheduled tasks.
 
 ### Refinement Operations
 
@@ -56,18 +56,18 @@ After major refinement cycles, the librarian presents a summary of changes. The 
 
 ### Refinement Audit Log
 
-Every librarian action produces a log entry: what changed, why, what the entry looked like before, and a confidence level. This enables rollback and builds trust in automated curation.
+Every librarian action produces a log entry: what changed, why, what the entry looked like before. This enables rollback and builds trust in automated curation.
 
 ---
 
-## Researcher (Reference Desk)
+## Retriever (Reference Desk)
 
-The researcher is the query interface. Other agents and humans talk to the researcher when they need knowledge.
+The retriever is the query interface. Other agents and humans talk to the retriever when they need knowledge.
 
 - **Query routing:** Determine the best retrieval strategy for each query. Exact match → tag query. Vague question → vector search. Exploratory → combined tag and vector search.
 - **Multi-strategy fusion:** For complex queries, combine results from multiple indexes and rank by relevance.
-- **Maturity-aware responses:** When returning a stub entry, flag it as low-confidence. When returning a fully enriched entry, flag it as high-confidence. Let the consuming agent decide how to weight it.
-- **Gap detection:** When a query returns no results or only stubs, log a "knowledge:gap" event. The indexer or librarian can then prioritise acquiring or enriching that area.
+- **Maturity-aware responses:** Include its maturity level so the consuming agent can decide how to weight it.
+- **Gap detection:** When a query returns no results or only stubs, note the gap in output for the user. The indexer or librarian can then prioritise acquiring or enriching that area.
 - **Context assembly:** For agents with limited context windows, return concise, pre-digested knowledge — not raw documents. Summarise, extract the relevant section, or provide a structured snippet.
 - **Human-readable generation:** When a human queries the library directly, generate a readable response with narrative, examples, and context — produced on the fly from the inference-optimised nuggets. These outputs are disposable: if the source nuggets change, the document is regenerated. If a human spots an error, the correction goes to the source nugget, not the generated document.
 - **Visualization:** Generate interactive visual representations of the library. Embedding visualization shows all items plotted in 2D space via t-SNE dimensionality reduction, revealing semantic clusters and gaps. Produces self-contained HTML files.
@@ -76,7 +76,7 @@ The researcher is the query interface. Other agents and humans talk to the resea
 
 ## Intern (Institutional Learner)
 
-Read-only to everything — library content, agent logs, event history, user conversations. Append-only to a dedicated recommendations queue.
+Read-only to everything — library content, agent logs, user conversations. Append-only to a dedicated recommendations queue.
 
 The intern is the library's capacity for self-awareness at the system level. It cannot write to the library directly. It outputs recommendations into a review queue that humans or senior agents approve or reject.
 

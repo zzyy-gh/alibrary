@@ -240,10 +240,10 @@ Interactive end-to-end workflow test. Ask the user what pipeline to test, then v
 
 Ask the user which workflow to test:
 
-- **ingest to search** — pick an existing inbox item (or ask user to provide one), verify it's catalogued (raw:catalogued event exists), has an embedding in ChromaDB, and appears in search results
+- **ingest to search** — pick an existing inbox item (or ask user to provide one), verify it has an embedding in ChromaDB, has an embedding in ChromaDB, and appears in search results
 - **ingest to embedding** — verify a specific item has been indexed and its embedding exists and returns meaningful similarity results
 - **search accuracy** — run a set of queries the user provides and verify relevant items are returned in the top results
-- **full pipeline** — verify the complete chain: item in inbox → frontmatter valid → tags assigned → event emitted → embedding exists → searchable
+- **full pipeline** — verify the complete chain: item in inbox → frontmatter valid → tags assigned → embedding exists → searchable
 - **custom** — user specifies start and end points
 
 ### For each workflow

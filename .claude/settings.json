@@ -2,7 +2,7 @@
   "mcpServers": {
     "knowledge-library": {
       "command": "python",
-      "args": [".claude/scripts/mcp_researcher.py"],
+      "args": [".claude/scripts/mcp_retriever.py"],
       "cwd": "."
     }
   }

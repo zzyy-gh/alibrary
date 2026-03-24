@@ -10,10 +10,8 @@ from helpers import write_frontmatter, parse_frontmatter
 
 
 class TestCmdIngest:
-    def test_ingest_text(self, tmp_project, db_path):
-        with patch("cli.get_project_root", return_value=tmp_project), \
-             patch("cli.init_db"), \
-             patch("cli.emit_event", return_value=1):
+    def test_ingest_text(self, tmp_project):
+        with patch("cli.get_project_root", return_value=tmp_project):
             from cli import cmd_ingest
             args = SimpleNamespace(url=None, file=None, text="Hello world", title="Test", type=None)
             cmd_ingest(args)
@@ -25,10 +23,8 @@ class TestCmdIngest:
         assert fm["id"] is not None
         assert body == "Hello world"
 
-    def test_ingest_url(self, tmp_project, db_path):
-        with patch("cli.get_project_root", return_value=tmp_project), \
-             patch("cli.init_db"), \
-             patch("cli.emit_event", return_value=1):
+    def test_ingest_url(self, tmp_project):
+        with patch("cli.get_project_root", return_value=tmp_project):
             from cli import cmd_ingest
             args = SimpleNamespace(url="https://example.com", file=None, text=None, title=None, type=None)
             cmd_ingest(args)
@@ -81,5 +77,3 @@ class TestCmdQuery:
         output = capsys.readouterr().out
         assert "Agent Patterns" in output
         assert "Other" not in output
-
-

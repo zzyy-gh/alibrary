@@ -8,8 +8,9 @@ tags:
 - patterns
 - coordination
 - multi-agent
-created_at: 2026-03-22T00:00:00Z
+created_at: 2026-03-22 00:00:00+00:00
 created_by: migration
+maturity: summary
 ---
 
 # Responsibility Patterns
@@ -25,7 +26,7 @@ Framework-agnostic — these are structural patterns that apply regardless of ru
 - [ ] Research external frameworks (CrewAI, AutoGen, LangGraph, OpenAI Swarm, Claude Agent SDK) — extract patterns, not dependencies
 - [ ] Write up coherence-checking as a worked example
 - [ ] When does shared-filesystem coordination break down? At what scale do you need a message bus?
-- [ ] Can agents span runtimes (e.g., indexer on Claude Code, researcher on a custom API) and still coordinate through the same event queue?
+- [ ] Can agents span runtimes (e.g., indexer on Claude Code, retriever on a custom API) and still coordinate through the same shared state?
 - [ ] Are there real-world examples of the multi-team pattern (separate agent teams coordinating on a shared project)?
 
 ---
@@ -36,7 +37,7 @@ How responsibilities are split across agents. Each pattern implies a different c
 
 ### 1. Shared state (implicit handoff)
 
-Each agent owns a distinct responsibility but discovers the other's work by reading shared state (filesystem, database, event queue). No direct communication — agents coordinate by leaving artifacts for each other.
+Each agent owns a distinct responsibility but discovers the other's work by reading shared state (filesystem, database). No direct communication — agents coordinate by leaving artifacts for each other.
 
 **Responsibility contract:** Non-overlapping ownership. Each agent reads what others produce but only writes to its own domain.
 
@@ -47,7 +48,7 @@ Each agent owns a distinct responsibility but discovers the other's work by read
 - No real-time coordination — agents discover changes asynchronously
 - Works well when agents have distinct, non-overlapping responsibilities
 
-**Example:** The knowledge library's four agents coordinate through the filesystem and a SQLite event queue. The indexer catalogues raw items; the librarian synthesizes nuggets on its next scheduled run. Ownership is clear: the indexer owns `/inbox/` health and cataloguing; the librarian owns synthesis and refinement.
+**Example:** The knowledge library's four agents coordinate through the filesystem and ChromaDB. The indexer catalogues raw items; the librarian synthesizes nuggets on its next scheduled run. Ownership is clear: the indexer owns `/inbox/` health and cataloguing; the librarian owns synthesis and refinement.
 
 ### 2. Parallel specialization (agent teams)
 
@@ -79,7 +80,7 @@ Agents run in sequence. Each stage owns a transformation; the output of one beco
 - Bottlenecked by the slowest stage
 - Natural fit when there's a strict dependency between stages
 
-**Example:** Raw item → Indexer (catalogue + embed) → Librarian (synthesize + enrich) → Researcher (serve). Each stage produces an artifact the next stage consumes.
+**Example:** Raw item → Indexer (catalogue + embed) → Librarian (synthesize + enrich) → Retriever (serve). Each stage produces an artifact the next stage consumes.
 
 ### 4. Delegation (parent-child)
 
@@ -126,7 +127,7 @@ Multiple independent agent teams, each owning a different domain, working on the
 - Coordination overhead — need clear boundaries for who owns which artifacts
 - Risk of conflicting changes if artifact boundaries aren't strict
 
-**Example:** A knowledge library team (indexer/librarian/researcher/intern) runs alongside a code analysis team (scanner/reviewer/fixer). Both teams write to the same repo but own different folders. The code team might query the knowledge library's researcher for context, but the teams don't share agents.
+**Example:** A knowledge library team (indexer/librarian/retriever/intern) runs alongside a code analysis team (scanner/reviewer/fixer). Both teams write to the same repo but own different folders. The code team might query the knowledge library's retriever for context, but the teams don't share agents.
 
 **Open question:** Are there real-world production examples of this pattern? Most multi-agent frameworks focus on single-team coordination.
 
@@ -143,7 +144,7 @@ A pool of agents with overlapping capabilities. Responsibility is assigned dynam
 - Harder to debug — no fixed agent-to-task mapping
 - Works best with homogeneous agents (same model, same tools) where any agent can handle any task
 
-**Example:** A pool of researcher agents handling incoming queries. Queries are routed to whichever agent is free. All agents have the same skills and access.
+**Example:** A pool of retriever agents handling incoming queries. Queries are routed to whichever agent is free. All agents have the same skills and access.
 
 **Contrast with parallel specialization:** Specialization has fixed roles; swarms have fluid roles. Specialization coordinates through shared state; swarms coordinate through a dispatcher.
 

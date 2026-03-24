@@ -10,6 +10,7 @@ tags:
 - multi-agent
 created_at: 2026-03-23 00:00:00+00:00
 created_by: human
+maturity: summary
 ---
 
 # Useful Custom Agents for Claude Code
@@ -58,6 +59,13 @@ Create tests from bug reports that reproduce the original bug.
 - Write a test that fails without the fix and passes with it
 - Add the test to the correct suite
 - Verify no existing tests break
+
+### Project Optimization Auditor
+Audit the entire workspace for refinement opportunities — from surface cleanup to workflow redesign.
+- Identify duplicate content, dead code, unused imports, and inconsistent patterns across the project
+- Question whether workflows and pipelines still make sense — flag steps that add overhead without value, features that duplicate what simpler tools already do, and abstractions that don't earn their complexity
+- Suggest structural moves: merging files, consolidating definitions, revamping outdated sections, extracting shared logic
+- Propose workflow simplifications or complete revamps when the current design has drifted from what's actually needed
 
 ---
 

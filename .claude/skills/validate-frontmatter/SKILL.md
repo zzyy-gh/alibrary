@@ -17,6 +17,7 @@ Validate and repair YAML frontmatter on a raw item in `/inbox/`.
    - `created_at`: ISO 8601 datetime. If missing, use current time via `now_iso()`
    - `created_by`: non-empty string. If missing, set to `"unknown"`
 3. Validate optional fields if present: `source_url`, `artifact_path`, `summary`
+   - `maturity`: one of `stub`, `summary`, `detailed`, `complete`. If missing, default to `stub`.
 4. Write repaired frontmatter back using `write_frontmatter()` from helpers
 
 ## Output

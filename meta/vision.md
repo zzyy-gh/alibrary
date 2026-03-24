@@ -14,6 +14,6 @@ The Knowledge Library is a persistent, structured, agent-accessible knowledge st
 
 - **Auditability.** Every change is logged with a reason, a timestamp, and the agent that made it. Knowledge can be versioned, reverted, and traced.
 
-- **Inference-first content design.** Nuggets are optimised for agent consumption, not human readability. This means: high information density per token, explicit declarative statements rather than narrative prose, consistent terminology, and every constraint and exception stated rather than implied. Human-readable versions are generated on demand by the researcher.
+- **Inference-first content design.** Nuggets are optimised for agent consumption, not human readability. This means: high information density per token, explicit declarative statements rather than narrative prose, consistent terminology, and every constraint and exception stated rather than implied. Human-readable versions are generated on demand by the retriever.
 
 - **Correctness is contextual.** Every nugget's health is evaluated relative to its stated assumptions and constraints, not in absolute terms. Higher-level nuggets naturally have looser constraints and broader applicability — they combine with other nuggets to derive more specific lower-level ones. The library embraces this abstraction gradient rather than demanding uniform specificity.
