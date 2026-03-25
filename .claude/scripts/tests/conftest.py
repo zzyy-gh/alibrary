@@ -42,8 +42,6 @@ def sample_nugget(tmp_project):
         "maturity": "summary",
         "summary": "A test nugget summary.",
         "tags": ["test", "nugget"],
-        "quality_score": 0.7,
-        "decay_rate": "medium",
         "created_at": now_iso(),
         "created_by": "test",
     }, "Synthesized test content.")

@@ -30,7 +30,7 @@ alibrary/
 │   ├── scripts/
 │   │   ├── helpers.py          # Shared utilities (UUID, frontmatter, ID resolution)
 │   │   ├── find_unprocessed.py # Find uncatalogued raw items
-│   │   ├── cli.py             # CLI: ingest, query, trace, search
+│   │   ├── cli.py             # CLI: ingest, search
 │   │   ├── embeddings.py      # Embedding generation + ChromaDB vector store
 │   │   ├── retriever.py       # Multi-strategy search (tag, semantic, keyword)
 │   │   └── mcp_retriever.py   # MCP tool server for library search

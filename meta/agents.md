@@ -1,15 +1,14 @@
 # Agents
 
-Four agents maintain the library. Each has a distinct role, a clear trigger model, and access to the shared library store. The first three — indexer, librarian, retriever — are operational workers with read-write access to the library. The fourth — the intern — is an observer with read-only access, whose role is institutional learning.
+Three agents maintain the library. Each has a distinct role, a clear trigger model, and access to the shared library store — indexer, librarian, and retriever — all operational workers with read-write access to the library.
 
 ## Overview
 
 | Agent | Role | Access | Trigger |
 |-------|------|--------|---------|
 | Indexer | Catalogues raw items, assigns tags, generates embeddings. | Read-write content, read-only governance. | New items in `/inbox/`. Must be fast and cheap. |
-| Librarian | Enriches stubs, validates links, merges duplicates, identifies gaps, manages staleness. | Read-write content, read-only governance. | Scheduled (daily/weekly). |
+| Librarian | Enriches stubs, validates links, merges duplicates, identifies gaps. | Read-write content, read-only governance. | Scheduled (daily/weekly). |
 | Retriever | Handles queries from agents and humans. Determines best retrieval strategy. | Read-write content, read-only governance. | On-demand via tool call or API. |
-| Intern | Observes all system activity, surfaces institutional learning. | Read-only everything. Append-only to recommendations queue. | Periodic (end of day/week). |
 
 ---
 
@@ -44,11 +43,8 @@ The librarian is the refinement engine. It operates asynchronously on a schedule
 - **Link validation:** Check source URLs on raw items. Flag broken links, detect redirects, note if content has changed significantly since last check.
 - **Deduplication:** Detect nuggets that cover substantially the same insight. Merge them into one richer entry, preserving the best content from each.
 - **Cross-source synthesis:** When multiple raw items or nuggets cover related ground, synthesize new higher-order nuggets that capture the underlying pattern or principle — this creates *new* knowledge. These nuggets list their multiple sources in the frontmatter `sources` field for provenance.
-- **Consolidation:** When a cluster of related nuggets collectively express a pattern that none captures individually, the librarian distills them into fewer, higher-level nuggets — this *reduces* the nugget count. The consolidated nugget lists absorbed nugget IDs in its `sources` field. Absorbed originals are marked stale. This is how the library develops conceptual depth: many observations become fewer principles.
+- **Consolidation:** When a cluster of related nuggets collectively express a pattern that none captures individually, the librarian distills them into fewer, higher-level nuggets — this *reduces* the nugget count. The consolidated nugget lists absorbed nugget IDs in its `sources` field. Absorbed originals are archived or removed. This is how the library develops conceptual depth: many observations become fewer principles.
 - **Gap analysis:** Examine the library's shape. Identify domains with thin coverage relative to their importance or usage frequency. Flag gaps for human review or autonomous acquisition.
-- **Staleness management:** Apply decay models by knowledge type. Tech-specific entries decay fast (6–12 months), conceptual entries decay slowly (2–5 years). Re-check entries past their review-by date.
-- **Quality scoring:** Maintain `quality_score` per entry (completeness, accuracy, recency, usage, link health). A key dimension: whether the nugget's assumptions and constraints are explicitly stated — correctness is always relative to stated constraints. Surface the lowest-quality entries for priority attention.
-- **Embedding refresh:** After any content change (enrichment, merge, consolidation, synthesis), regenerate the embedding for affected entries via the **generate-embedding** skill. The vector index stores only IDs and embeddings — stale embeddings cause semantic search to return wrong results.
 
 ### User-Prompted Updates After Refinement
 
@@ -72,30 +68,3 @@ The retriever is the query interface. Other agents and humans talk to the retrie
 - **Human-readable generation:** When a human queries the library directly, generate a readable response with narrative, examples, and context — produced on the fly from the inference-optimised nuggets. These outputs are disposable: if the source nuggets change, the document is regenerated. If a human spots an error, the correction goes to the source nugget, not the generated document.
 - **Visualization:** Generate interactive visual representations of the library. Embedding visualization shows all items plotted in 2D space via t-SNE dimensionality reduction, revealing semantic clusters and gaps. Produces self-contained HTML files.
 
----
-
-## Intern (Institutional Learner)
-
-Read-only to everything — library content, agent logs, user conversations. Append-only to a dedicated recommendations queue.
-
-The intern is the library's capacity for self-awareness at the system level. It cannot write to the library directly. It outputs recommendations into a review queue that humans or senior agents approve or reject.
-
-### What the Intern Observes
-
-- **Query patterns:** Repeated topics, phrasings that miss existing entries, synonym gaps in embeddings.
-- **Agent disagreements:** Indexer and librarian disagree on tags or synthesis quality.
-- **Refinement outcomes:** Reverted merges, degraded enrichments, wrong classifications.
-- **User conversation signals:** Concepts, terminology, and knowledge that surfaces in conversation but never gets indexed.
-- **System-level gaps:** Structural issues beyond content — tag vocabulary drift, organizational patterns.
-
-### What the Intern Outputs
-
-All intern output goes into a recommendations queue with a type, a rationale, and a suggested action. Recommendations are never auto-applied. Examples:
-
-- **Policy update:** "The 0.92 cosine threshold for deduplication is too aggressive based on 7 false merges this month. Suggest lowering to 0.88."
-- **Missing knowledge:** "Users have asked about 'edge computing deployment patterns' in 12 conversations this month. The library has zero entries. Recommend acquisition."
-- **Agent self-improvement:** "The indexer's synthesis quality for technical articles is low — 40% of its nuggets get substantially rewritten by the librarian. Suggest refining the indexer's synthesis strategy."
-
-### Why the Intern Stays Read-Only
-
-The read-only constraint is permanent by design, not a temporary limitation. The intern's value comes from its outsider perspective — it never defends past decisions because it never made any. Giving it write access would turn it into another librarian.

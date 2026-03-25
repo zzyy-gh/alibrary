@@ -9,16 +9,17 @@ Validate and repair YAML frontmatter on a raw item in `/inbox/`.
 ## Process
 
 1. Read the file using `parse_frontmatter()` from `.claude/scripts/helpers.py`
-2. Check required fields against the Raw Item schema in `meta/schemas.md`:
-   - `id`: valid UUID. If missing, generate one via `generate_uuid()`
-   - `title`: non-empty string. If missing, infer from filename or first heading
-   - `source_type`: one of `article`, `documentation`, `video`, `code`, `conversation`, `manual`, `snippet`. If missing, infer from content
-   - `tags`: list of 2–5 lowercase strings. If missing, leave empty for assign-tags skill
-   - `created_at`: ISO 8601 datetime. If missing, use current time via `now_iso()`
-   - `created_by`: non-empty string. If missing, set to `"unknown"`
-3. Validate optional fields if present: `source_url`, `artifact_path`, `summary`
-   - `maturity`: one of `stub`, `summary`, `detailed`, `complete`. If missing, default to `stub`.
-4. Write repaired frontmatter back using `write_frontmatter()` from helpers
+2. Check required fields against the Raw Item schema in `meta/schemas.md`
+3. Repair missing fields:
+   - `id`: generate via `generate_uuid()`
+   - `title`: infer from filename or first heading
+   - `source_type`: infer from content
+   - `tags`: leave empty for assign-tags skill
+   - `created_at`: use current time via `now_iso()`
+   - `created_by`: set to `"unknown"`
+   - `maturity`: default to `stub`
+4. Validate optional fields if present: `source_url`, `artifact_path`, `summary`
+5. Write repaired frontmatter back using `write_frontmatter()` from helpers
 
 ## Output
 

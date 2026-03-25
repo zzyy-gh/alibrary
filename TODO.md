@@ -33,18 +33,16 @@ Get the librarian working. The library improves itself over time.
 
 - [ ] **Librarian agent v1:** Build the scheduled refinement loop — enrichment, link validation, deduplication, contradiction detection, consolidation, and audit logging per the Librarian spec in `meta/agents.md`.
 - [ ] **Key thresholds:** Deduplication at >0.92 cosine similarity. Contradictions signal opportunities for unifying synthesis.
-- **Deliverable:** The library self-heals. Stubs get enriched, links get checked, duplicates get merged, contradictions drive unifying synthesis, and overlapping nuggets are consolidated.
+- **Deliverable:** The library self-heals. Stubs get enriched, links get checked, duplicates get merged, and overlapping nuggets are consolidated.
 
 ### Phase 4 — Intelligence (Week 8–10)
 
 Advanced features that make the library proactively useful.
 
 - [ ] **Librarian refinement summaries:** User-prompted updates per the Librarian spec in `meta/agents.md` — the only mechanism for crossing library knowledge into operational config.
-- [ ] **Gap analysis & staleness:** Coverage pattern analysis, per-type decay rates, auto-scheduled reviews per the Librarian spec in `meta/agents.md`.
-- [ ] **Quality dashboard:** Library health view — maturity distribution, stale entries, broken links, orphaned raw items, coverage heatmap, recent activity. Datasette/Metabase for health metrics dashboard.
-- [ ] **Intern agent v1:** Build the observation loop per the Intern spec in `meta/agents.md`. Start with query-pattern analysis and tag quality. Produces typed recommendations into a review queue.
-- [ ] **Recommendations queue & review UI:** Approve, reject, or defer intern recommendations. Includes weekly health report. Accepted recommendations become librarian tasks. Threshold alerts on metric breaches.
-- **Deliverable:** The library is a self-improving, self-aware knowledge system with proactive gap filling, quality management, user-prompted governance/agent updates, and a complete feedback loop from outcomes back to source nuggets via the intern.
+- [ ] **Gap analysis:** Coverage pattern analysis per the Librarian spec in `meta/agents.md`.
+- [ ] **Quality dashboard:** Library health view — maturity distribution, broken links, orphaned raw items, coverage heatmap, recent activity. Datasette/Metabase for health metrics dashboard.
+- **Deliverable:** The library is a self-improving, self-aware knowledge system with proactive gap filling and user-prompted governance/agent updates.
 
 ## Next Steps
 

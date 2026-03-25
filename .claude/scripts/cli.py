@@ -1,14 +1,12 @@
 """Knowledge Library CLI.
 
-Ingest raw items and query nuggets.
+Ingest raw items and search the library.
 
 Usage:
   python .claude/scripts/cli.py ingest --url URL [--title TITLE] [--type TYPE]
   python .claude/scripts/cli.py ingest --file PATH [--title TITLE] [--type TYPE]
   python .claude/scripts/cli.py ingest --text "content" [--title TITLE] [--type TYPE]
-  python .claude/scripts/cli.py query --list
-  python .claude/scripts/cli.py query --tag TAG [--tag TAG2]
-  python .claude/scripts/cli.py query --keyword TERM
+  python .claude/scripts/cli.py search --query "semantic query" [--tags TAG1,TAG2] [--keyword TERM]
 """
 
 import argparse
@@ -81,68 +79,6 @@ def cmd_ingest(args):
     print(f"Title:    {title}")
 
 
-def cmd_query(args):
-    root = get_project_root()
-    nuggets_dir = root / "nuggets"
-
-    if not nuggets_dir.is_dir():
-        print("No nuggets directory found.")
-        return
-
-    nugget_files = sorted(nuggets_dir.glob("*.md"))
-    if not nugget_files:
-        print("No nuggets found.")
-        return
-
-    # Load all nuggets
-    nuggets = []
-    for fpath in nugget_files:
-        if fpath.name == ".gitkeep":
-            continue
-        try:
-            fm, body = parse_frontmatter(fpath)
-            nuggets.append({"frontmatter": fm, "body": body, "path": str(fpath)})
-        except Exception:
-            continue
-
-    if not nuggets:
-        print("No nuggets found.")
-        return
-
-    # Filter
-    results = nuggets
-
-    if args.tag:
-        tags_needed = set(t.lower() for t in args.tag)
-        results = [
-            n for n in results
-            if tags_needed.issubset(set(t.lower() for t in n["frontmatter"].get("tags", [])))
-        ]
-
-    if args.keyword:
-        kw = args.keyword.lower()
-        results = [
-            n for n in results
-            if kw in n["frontmatter"].get("title", "").lower()
-            or kw in n["frontmatter"].get("summary", "").lower()
-            or kw in n["body"].lower()
-        ]
-
-    if not results:
-        print("No matching nuggets found.")
-        return
-
-    # Display
-    for n in results:
-        fm = n["frontmatter"]
-        print(f"[{fm.get('maturity', '?'):>8}] {fm.get('id', '?')[:8]}..  {fm.get('title', 'Untitled')}")
-        if fm.get("summary"):
-            print(f"           {fm['summary']}")
-        if fm.get("tags"):
-            print(f"           tags: {', '.join(fm['tags'])}")
-        print()
-
-
 def cmd_search(args):
     from retriever import search_semantic, search_tags, search_keyword, format_results
 
@@ -196,12 +132,6 @@ def main():
     p_ingest.add_argument("--title", help="Title for the raw item")
     p_ingest.add_argument("--type", choices=VALID_SOURCE_TYPES, help="Source type")
 
-    # query
-    p_query = subparsers.add_parser("query", help="Search nuggets")
-    p_query.add_argument("--tag", action="append", help="Filter by tag (can repeat)")
-    p_query.add_argument("--keyword", help="Search by keyword in title/summary/body")
-    p_query.add_argument("--list", action="store_true", help="List all nuggets")
-
     # search
     p_search = subparsers.add_parser("search", help="Multi-strategy search")
     p_search.add_argument("--query", help="Semantic search query")
@@ -214,11 +144,6 @@ def main():
 
     if args.command == "ingest":
         cmd_ingest(args)
-    elif args.command == "query":
-        if not args.tag and not args.keyword and not args.list:
-            print("Error: provide --tag, --keyword, or --list", file=sys.stderr)
-            sys.exit(1)
-        cmd_query(args)
     elif args.command == "search":
         cmd_search(args)
 

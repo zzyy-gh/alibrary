@@ -48,7 +48,7 @@ Each agent owns a distinct responsibility but discovers the other's work by read
 - No real-time coordination — agents discover changes asynchronously
 - Works well when agents have distinct, non-overlapping responsibilities
 
-**Example:** The knowledge library's four agents coordinate through the filesystem and ChromaDB. The indexer catalogues raw items; the librarian synthesizes nuggets on its next scheduled run. Ownership is clear: the indexer owns `/inbox/` health and cataloguing; the librarian owns synthesis and refinement.
+**Example:** The knowledge library's three agents coordinate through the filesystem and ChromaDB. The indexer catalogues raw items; the librarian synthesizes nuggets on its next scheduled run. Ownership is clear: the indexer owns `/inbox/` health and cataloguing; the librarian owns synthesis and refinement.
 
 ### 2. Parallel specialization (agent teams)
 
@@ -112,7 +112,7 @@ A dedicated agent with broad visibility but no write access. Its responsibility 
 - Value comes from outsider perspective
 - Recommendations need a review mechanism to become actionable
 
-**Example:** The intern agent observes query patterns, agent disagreements, and refinement outcomes. Posts typed recommendations ("dedup threshold too aggressive", "missing coverage in domain X").
+**Example:** A tester agent observes query patterns, agent disagreements, and refinement outcomes. Posts typed recommendations ("dedup threshold too aggressive", "missing coverage in domain X").
 
 ### 6. Multi-team (federated ownership)
 
@@ -127,7 +127,7 @@ Multiple independent agent teams, each owning a different domain, working on the
 - Coordination overhead — need clear boundaries for who owns which artifacts
 - Risk of conflicting changes if artifact boundaries aren't strict
 
-**Example:** A knowledge library team (indexer/librarian/retriever/intern) runs alongside a code analysis team (scanner/reviewer/fixer). Both teams write to the same repo but own different folders. The code team might query the knowledge library's retriever for context, but the teams don't share agents.
+**Example:** A knowledge library team (indexer/librarian/retriever) runs alongside a code analysis team (scanner/reviewer/fixer). Both teams write to the same repo but own different folders. The code team might query the knowledge library's retriever for context, but the teams don't share agents.
 
 **Open question:** Are there real-world production examples of this pattern? Most multi-agent frameworks focus on single-team coordination.
 

@@ -119,14 +119,12 @@ Run all checks from Mode 1 (docs) and Mode 2 (scripts), then additionally:
 ### Content integrity
 
 1. **Raw items** — scan all files in `/inbox/`:
-   - Every file has valid frontmatter per Raw Item Schema
-   - Required fields present: id (UUID), title, source_type, tags, created_at, created_by
+   - Validate all files against their schema in `meta/schemas.md`
    - Tags are lowercase, 2-5 per item
    - No duplicate IDs across inbox
 
 2. **Nuggets** — scan all files in `/nuggets/`:
-   - Every file has valid frontmatter per Nugget Schema
-   - Required fields present: id, title, maturity, tags, quality_score, decay_rate, created_at, created_by, changelog
+   - Validate all files against their schema in `meta/schemas.md`
    - Maturity is one of: stub, summary, detailed, complete
    - Tags are lowercase, 2-10 per nugget
    - No duplicate IDs across nuggets
