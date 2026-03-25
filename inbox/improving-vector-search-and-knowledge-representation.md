@@ -14,7 +14,47 @@ maturity: summary
 
 # Improving Vector Search and Knowledge Representation
 
-Research on practical and frontier techniques for improving how knowledge bases store, search, and represent information. Covers production-ready improvements, experimental approaches, and speculative directions. Organized by implementation priority.
+Research on practical and frontier techniques for improving how knowledge bases store, search, and represent information. Covers production-ready improvements, experimental approaches, and speculative directions.
+
+---
+
+## A Framework for Knowledge Representation
+
+Three factors shape how knowledge should be represented in a vector database:
+
+### 1. What to store
+
+What information goes into the representation. Current standard: embed the semantic meaning of text as a single dense vector. But text carries much more signal than meaning alone.
+
+- **Semantic meaning** — what the content is about (the standard approach)
+- **Structural position** — where in the document: heading level, code vs prose, argument flow. Two documents with identical content but different structures (tutorial vs reference) serve different purposes.
+- **Temporal context** — when this was true. A claim about "best practices in 2024" has a different validity window than a mathematical proof. Freshness matters but isn't currently encoded.
+- **Relational context** — what this connects to. Tags and embedding proximity capture some of this, but explicit connections (this builds on X, this contradicts Y) are lost in a flat vector.
+- **Physical laws and constraints** — rules that are always true vs claims that depend on context. "Water boils at 100°C" is different from "React is the best frontend framework" — one is invariant, the other is contextual. The representation should distinguish these.
+- **Uncertainty** — is this a proven fact, a well-supported hypothesis, or speculation? Current embeddings treat all content as equally certain.
+
+### 2. How to improve
+
+Processes for refining representations over time. A static embedding is a snapshot — knowledge should evolve.
+
+- **Boundary awareness** — know what each knowledge point explains AND what it doesn't. A nugget about "event-driven architecture" applies to distributed systems but not to UI event handlers. Current embeddings encode *what something is about* but not *where it stops being valid*. Encoding the limits of applicability is an underexplored direction — box embeddings get closest (a region has edges), but explicitly representing boundary conditions is largely open.
+- **Cross-pollination** — let knowledge points interact to discover better arrangements. Two points near each other in embedding space may reveal a pattern that neither states individually. This can happen at the synthesis level (librarian creating nuggets) or at the embedding level (RL-refined retrieval adjusting vectors based on what actually gets used together).
+- **Environmental interaction** — treat the knowledge base as an entity that tests its understanding against the external world. Instead of passively storing information, the system makes predictions, observes outcomes, and updates its representations. A knowledge point that consistently leads to wrong predictions should weaken; one that proves useful should strengthen.
+- **Compression** — as knowledge accumulates, represent the same understanding with fewer, denser points. This is consolidation at the vector level — many similar observations collapsing into a single, richer representation. The information isn't lost, it's distilled.
+
+### 3. Techniques
+
+Implementation substrates that enable the above. Each technique addresses different aspects of what to store and how to improve:
+
+- **Standard dense vectors** — current baseline. Good at semantic meaning, weak at everything else.
+- **Quantum-inspired** — superposition for encoding ambiguity and multiple meanings simultaneously.
+- **Structural** — tree/graph encodings that preserve document organization.
+- **Geometric** — hyperbolic spaces for hierarchy, box embeddings for regions/boundaries, cone embeddings for partial order.
+- **Multi-facet** — decomposed aspect vectors for cross-cutting retrieval.
+- **Neuromorphic** — associative memory and pattern completion instead of nearest-neighbor search.
+- **Topological** — persistent homology for detecting gaps and understanding the shape of knowledge.
+
+The techniques below are organized by implementation priority, starting with what improves retrieval today and ending with frontier approaches.
 
 ---
 
