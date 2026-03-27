@@ -4,7 +4,7 @@ title: Design Principles for LLM-Native Pipelines
 source_type: manual
 tags:
 - llm-native
-- design-principles
+- agentic-design-principles
 - pipelines
 - architecture
 created_at: 2026-03-22 00:00:00+00:00

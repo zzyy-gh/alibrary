@@ -39,6 +39,7 @@ The librarian is the refinement engine. It operates asynchronously on a schedule
 ### Refinement Operations
 
 - **Content enrichment:** Take a stub or summary nugget and deepen it: expand the synthesis, add nuance, write standalone prose, update the maturity score. May also revisit the source raw item(s) for details missed during initial indexing.
+- **Artifact summary enrichment:** For items with an `artifact_path` (non-markdown originals like HTML, PDF), compare the markdown summary body against the original artifact. If key concepts, details, or searchable terms are missing from the summary, enrich it so that semantic search and tag-based retrieval can surface the item for any concept it covers. Re-embed after enrichment.
 - **Inference optimisation:** When enriching entries, the goal is not "make this read better" but "make this more inferrable." Reduce ambiguity, increase density, standardise terminology, make connections explicit, state every constraint and exception.
 - **Link validation:** Check source URLs on raw items. Flag broken links, detect redirects, note if content has changed significantly since last check.
 - **Deduplication:** Detect nuggets that cover substantially the same insight. Merge them into one richer entry, preserving the best content from each.

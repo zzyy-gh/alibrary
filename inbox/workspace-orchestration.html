@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic workspace orchestration</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF8;
+  --bg2: #F3F2EE;
+  --bg3: #ECEAE4;
+  --text: #1A1A18;
+  --text2: #5F5E5A;
+  --text3: #888780;
+  --border: rgba(0,0,0,0.1);
+  --border2: rgba(0,0,0,0.18);
+  --blue: #185FA5;
+  --blue-bg: #E6F1FB;
+  --green: #3B6D11;
+  --green-bg: #EAF3DE;
+  --amber: #854F0B;
+  --amber-bg: #FAEEDA;
+  --purple: #534AB7;
+  --purple-bg: #EEEDFE;
+  --teal: #0F6E56;
+  --teal-bg: #E1F5EE;
+  --coral: #993C1D;
+  --coral-bg: #FAECE7;
+  --red: #A32D2D;
+  --red-bg: #FCEBEB;
+  --font: 'DM Sans', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1A1A18;
+    --bg2: #262624;
+    --bg3: #333330;
+    --text: #E8E6DF;
+    --text2: #B4B2A9;
+    --text3: #888780;
+    --border: rgba(255,255,255,0.1);
+    --border2: rgba(255,255,255,0.18);
+    --blue: #85B7EB;
+    --blue-bg: #0C447C;
+    --green: #97C459;
+    --green-bg: #27500A;
+    --amber: #EF9F27;
+    --amber-bg: #633806;
+    --purple: #AFA9EC;
+    --purple-bg: #3C3489;
+    --teal: #5DCAA5;
+    --teal-bg: #085041;
+    --coral: #F0997B;
+    --coral-bg: #712B13;
+    --red: #F09595;
+    --red-bg: #791F1F;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+}
+h1 {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.subtitle {
+  font-size: 15px;
+  color: var(--text2);
+  margin-bottom: 40px;
+}
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 48px 0 12px;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 32px 0 8px;
+}
+p, li {
+  font-size: 15px;
+  color: var(--text2);
+  margin-bottom: 16px;
+}
+.highlight {
+  background: var(--bg2);
+  border-left: 3px solid var(--purple);
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 24px 0;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.7;
+}
+.highlight strong { font-weight: 600; }
+.highlight-amber {
+  background: var(--bg2);
+  border-left: 3px solid var(--amber);
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  margin: 24px 0;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.7;
+}
+.highlight-amber strong { font-weight: 600; }
+
+.arch-section { margin: 32px 0 0; }
+
+.orch-box {
+  border: 0.5px solid var(--border2);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 14px;
+  background: var(--bg);
+}
+.orch-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.orch-icon {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--purple);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.orch-icon-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--purple);
+}
+.orch-title { font-size: 16px; font-weight: 600; }
+.orch-sub { font-size: 12px; color: var(--text3); margin-bottom: 12px; margin-left: 30px; }
+.orch-chips {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-left: 30px;
+}
+.chip {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text2);
+  padding: 5px 12px;
+  background: var(--bg2);
+  border-radius: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 9px;
+  font-family: var(--font);
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tag-wf { background: var(--blue-bg); color: var(--blue); }
+.tag-out { background: var(--green-bg); color: var(--green); }
+.tag-ref { background: var(--amber-bg); color: var(--amber); }
+.tag-ex { background: var(--bg3); color: var(--text3); }
+.tag-guide { background: var(--purple-bg); color: var(--purple); }
+.tag-merged { background: var(--coral-bg); color: var(--coral); }
+
+.spawn-arrow {
+  text-align: center;
+  padding: 4px 0;
+  font-size: 12px;
+  color: var(--text3);
+  transition: all .3s;
+}
+.spawn-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--bg2);
+  padding: 3px 12px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+.ws-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.ws {
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: all .35s ease;
+  background: var(--bg);
+}
+.ws-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.ws-sub { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+.ws-divider { height: 0.5px; background: var(--border); margin: 8px 0; }
+.ws-section { font-size: 11px; color: var(--text2); margin-bottom: 3px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+.ws-item { font-size: 11px; color: var(--text3); font-family: var(--mono); line-height: 1.7; }
+.ws-ref { font-size: 11px; color: var(--text3); font-family: var(--mono); line-height: 1.7; }
+.ref-arrow { color: var(--amber); font-weight: 600; }
+.ws.active { border-color: var(--blue); border-width: 2px; }
+.ws.referenced { border-color: var(--amber); border-width: 1.5px; border-style: dashed; }
+.ws.new-spawn { border-color: var(--amber); border-width: 2px; border-style: dashed; }
+.runtime { margin-top: 8px; opacity: 0; transition: opacity .35s; display: flex; align-items: center; gap: 4px; }
+.pulse-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.pulse-dot.on { animation: blink 1.4s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:.4} 50%{opacity:1} }
+.runtime-text { font-size: 11px; font-weight: 500; }
+.new-ws-area { margin-top: 12px; opacity: 0; max-height: 0; overflow: hidden; transition: all .4s ease; }
+
+.scenario-bar { display: flex; gap: 8px; margin: 20px 0 14px; flex-wrap: wrap; }
+.scenario-btn {
+  flex: 1; min-width: 130px; padding: 10px 8px;
+  font-size: 12px; font-family: var(--font); font-weight: 500;
+  border: 0.5px solid var(--border2); border-radius: 8px;
+  background: transparent; color: var(--text2); cursor: pointer;
+  transition: all .2s; text-align: center; line-height: 1.35;
+}
+.scenario-btn:hover { background: var(--bg2); }
+.scenario-btn.active { border-color: var(--blue); color: var(--blue); background: var(--blue-bg); }
+
+.narration-box {
+  font-size: 14px; color: var(--text2); line-height: 1.7;
+  padding: 16px 20px; background: var(--bg2); border-radius: 10px;
+  min-height: 80px; transition: opacity .25s;
+}
+
+.legend { display: flex; gap: 18px; margin-top: 16px; flex-wrap: wrap; padding: 12px 0; border-top: 0.5px solid var(--border); }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.layer-table {
+  width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13px;
+}
+.layer-table th {
+  text-align: left; font-weight: 600; padding: 10px 14px;
+  background: var(--bg2); border-bottom: 1px solid var(--border2);
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3);
+}
+.layer-table td {
+  padding: 10px 14px; border-bottom: 0.5px solid var(--border); color: var(--text2); vertical-align: top;
+}
+.layer-table tr:last-child td { border-bottom: none; }
+.layer-table code {
+  font-family: var(--mono); font-size: 11px; background: var(--bg2); padding: 2px 6px; border-radius: 4px;
+}
+
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+.rule-card { padding: 16px 18px; background: var(--bg2); border-radius: 10px; }
+.rule-num { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.rule-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+.rule-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+.check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+.check-card { padding: 16px 18px; border-radius: 10px; border: 0.5px solid var(--border); }
+.check-icon { font-size: 14px; margin-bottom: 6px; }
+.check-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+.check-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.check-card.pass { border-left: 3px solid var(--green); }
+.check-card.unique { border-left: 3px solid var(--purple); }
+.check-card.gap { border-left: 3px solid var(--amber); }
+
+.footer-note {
+  margin-top: 48px; padding-top: 20px;
+  border-top: 0.5px solid var(--border);
+  font-size: 12px; color: var(--text3);
+}
+</style>
+</head>
+<body>
+
+<h1>Dynamic workspace orchestration</h1>
+<p class="subtitle">Architecture for multi-workspace AI agent systems where process and product stay coherent</p>
+
+<div class="highlight">
+  <strong>Core invariant:</strong> A workspace is a paired guarantee — the workflow guidelines and the outputs always belong to each other. If a task would break that pairing, spin up a new workspace rather than contaminate an existing one.
+</div>
+
+<!-- ======================= ARCHITECTURE ======================= -->
+<h2>The architecture</h2>
+<p>The orchestrator lives outside all workspaces. It has its own guidance file that tells it how to discover workspaces, read their registries, and decide routing. Workspaces are storage — each one pairs a workflow (how to work here) with outputs (what was produced here). The runtime is dynamic: any session — yours or the orchestrator's — spawns agents into workspaces on demand.</p>
+
+<div class="arch-section">
+
+  <div class="orch-box">
+    <div class="orch-header">
+      <div class="orch-icon"><div class="orch-icon-dot"></div></div>
+      <span class="orch-title">Orchestrator</span>
+    </div>
+    <div class="orch-sub">Guided by its own CLAUDE.md. Contains workflows and registry. No mission outputs — at most: examples.</div>
+    <div class="orch-chips">
+      <span class="chip"><span class="tag tag-guide">guide</span> CLAUDE.md</span>
+      <span class="chip"><span class="tag tag-wf">wf</span> registry.json</span>
+      <span class="chip"><span class="tag tag-wf">wf</span> deep-research.json</span>
+      <span class="chip"><span class="tag tag-wf">wf</span> write-article.json</span>
+      <span class="chip"><span class="tag tag-ex">ex</span> cross-ws.md</span>
+    </div>
+  </div>
+
+  <div class="spawn-arrow">
+    <span>↓</span>
+    <span class="spawn-label" id="spawn-label">query(cwd=...)</span>
+  </div>
+
+  <div class="ws-grid" id="ws-grid">
+    <div class="ws" id="ws-research">
+      <div class="ws-name">Researcher</div>
+      <div class="ws-sub">Pure domain workspace</div>
+      <div class="ws-divider"></div>
+      <div class="ws-section"><span class="tag tag-wf">workflow</span></div>
+      <div class="ws-item">CLAUDE.md</div>
+      <div class="ws-item">.claude/skills/web-research/</div>
+      <div class="ws-item">.claude/agents/researcher.md</div>
+      <div class="ws-divider"></div>
+      <div class="ws-section"><span class="tag tag-out">outputs</span></div>
+      <div class="ws-item">findings/</div>
+      <div class="ws-item">sources/</div>
+      <div class="runtime" id="rt-research">
+        <span class="pulse-dot on" style="background:var(--blue)"></span>
+        <span class="runtime-text" style="color:var(--blue)">Runtime active</span>
+      </div>
+    </div>
+
+    <div class="ws" id="ws-writer">
+      <div class="ws-name">Writer</div>
+      <div class="ws-sub">Pure domain workspace</div>
+      <div class="ws-divider"></div>
+      <div class="ws-section"><span class="tag tag-wf">workflow</span></div>
+      <div class="ws-item">CLAUDE.md</div>
+      <div class="ws-item">.claude/skills/style-guide/</div>
+      <div class="ws-item">.claude/agents/writer.md</div>
+      <div class="ws-divider"></div>
+      <div class="ws-section"><span class="tag tag-out">outputs</span></div>
+      <div class="ws-item">drafts/</div>
+      <div class="ws-item">published/</div>
+      <div class="runtime" id="rt-writer">
+        <span class="pulse-dot on" style="background:var(--blue)"></span>
+        <span class="runtime-text" style="color:var(--blue)">Runtime active</span>
+      </div>
+    </div>
+
+    <div class="ws" id="ws-coder">
+      <div class="ws-name">Coder</div>
+      <div class="ws-sub">Pure domain workspace</div>
+      <div class="ws-divider"></div>
+      <div class="ws-section"><span class="tag tag-wf">workflow</span></div>
+      <div class="ws-item">CLAUDE.md</div>
+      <div class="ws-item">.claude/skills/api-patterns/</div>
+      <div class="ws-item">.claude/agents/implementer.md</div>
+      <div class="ws-divider"></div>
+      <div class="ws-section"><span class="tag tag-out">outputs</span></div>
+      <div class="ws-item">src/</div>
+      <div class="ws-item">tests/</div>
+      <div class="runtime" id="rt-coder">
+        <span class="pulse-dot on" style="background:var(--blue)"></span>
+        <span class="runtime-text" style="color:var(--blue)">Runtime active</span>
+      </div>
+    </div>
+
+    <div class="ws" id="ws-article">
+      <div class="ws-name">Article pipeline</div>
+      <div class="ws-sub">Cross-referencing workspace</div>
+      <div class="ws-divider"></div>
+      <div class="ws-section"><span class="tag tag-wf">workflow</span> <span class="tag tag-ref">refs</span></div>
+      <div class="ws-item">CLAUDE.md</div>
+      <div class="ws-item">.claude/agents/editor.md</div>
+      <div class="ws-ref"><span class="ref-arrow">&rarr;</span> use: ~/researcher/.claude/skills/</div>
+      <div class="ws-ref"><span class="ref-arrow">&rarr;</span> use: ~/writer/.claude/skills/</div>
+      <div class="ws-divider"></div>
+      <div class="ws-section"><span class="tag tag-out">outputs</span></div>
+      <div class="ws-item">articles/</div>
+      <div class="ws-item">review-notes/</div>
+      <div class="runtime" id="rt-article">
+        <span class="pulse-dot on" style="background:var(--blue)"></span>
+        <span class="runtime-text" style="color:var(--blue)">Runtime active</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="new-ws-area" id="new-ws-area"></div>
+
+  <div class="scenario-bar">
+    <button class="scenario-btn active" onclick="setScene(0)">Pure workspace</button>
+    <button class="scenario-btn" onclick="setScene(1)">Cross-ref workspace</button>
+    <button class="scenario-btn" onclick="setScene(2)">Undeclared ref detected</button>
+    <button class="scenario-btn" onclick="setScene(3)">New workspace spun up</button>
+  </div>
+
+  <div class="narration-box" id="narration"></div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Active runtime</div>
+    <div class="legend-item"><div class="legend-dot" style="border:1.5px dashed var(--amber);box-sizing:border-box"></div>Referenced / dynamic</div>
+    <div class="legend-item"><span class="tag tag-guide">guide</span>&nbsp;Orchestrator guidance</div>
+    <div class="legend-item"><span class="tag tag-wf">workflow</span>&nbsp;Process</div>
+    <div class="legend-item"><span class="tag tag-out">outputs</span>&nbsp;Products</div>
+    <div class="legend-item"><span class="tag tag-ref">refs</span>&nbsp;Cross-reference</div>
+  </div>
+</div>
+
+<!-- ======================= LAYERS ======================= -->
+<h2>The three layers</h2>
+<p>The key distinction is between what's stored on disk and what's actively running. Everything on disk is passive — a session (yours or the orchestrator's) brings it to life. Anyone can enter a workspace and start a session there.</p>
+
+<table class="layer-table">
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>What it contains</th>
+      <th>Who can modify it</th>
+      <th>Who can start a session here</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Orchestrator</strong></td>
+      <td>Its own CLAUDE.md (how to orchestrate), workflows, registry, examples</td>
+      <td>You (design the workflows)</td>
+      <td>You or a scheduler — the orchestrator reads its guidance, then spawns agents into workspaces</td>
+    </tr>
+    <tr>
+      <td><strong>Workspace</strong></td>
+      <td>Workflow (CLAUDE.md + skills + agents) paired with outputs</td>
+      <td>You (workflow), agents (outputs)</td>
+      <td>You directly (<code>cd workspace && claude</code>) or orchestrator via <code>query(cwd=...)</code></td>
+    </tr>
+    <tr>
+      <td><strong>Runtime</strong></td>
+      <td>An active agent session — ephemeral, exists only while running</td>
+      <td>The running agent</td>
+      <td>Started by whoever initiated the session — the coherence rules apply regardless of who started it</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="highlight">
+  <strong>The workspace doesn't care who started the session.</strong> Whether you <code>cd</code> into it and run Claude Code directly, or the orchestrator spawns a subagent via the Agent SDK — the same CLAUDE.md loads, the same skills are available, and the same coherence invariant applies. The orchestrator is just one way in. You are another. The rules don't change.
+</div>
+
+<!-- ======================= ORCHESTRATOR ANATOMY ======================= -->
+<h2>Orchestrator anatomy</h2>
+<p>The orchestrator is unique because it has its own guidance file but produces no mission outputs. Its CLAUDE.md tells it how to behave as an orchestrator — not how to do research, writing, or coding.</p>
+
+<div class="highlight-amber">
+  <strong>The orchestrator's CLAUDE.md covers:</strong><br><br>
+  &bull; <strong>Discovery</strong> — how to find and read workspace CLAUDE.md files, scan for skills, understand what each workspace does<br>
+  &bull; <strong>Registry</strong> — a manifest of all known workspaces, their domains, their declared cross-references<br>
+  &bull; <strong>Routing rules</strong> — when to spawn into an existing workspace, when to ask the user, when to create a new workspace<br>
+  &bull; <strong>Coherence enforcement</strong> — how to detect undeclared cross-references and what to do about them<br>
+  &bull; <strong>Workflow templates</strong> — recipes for multi-workspace tasks (e.g., "research then write" as a sequence of spawns)
+</div>
+
+<!-- ======================= WORKSPACE ANATOMY ======================= -->
+<h2>Workspace anatomy</h2>
+<p>Every workspace has two halves that must stay paired. The workflow defines how work is done here. The outputs are what was produced here. The pairing is the point — you can read a workspace's workflow and know exactly what kind of outputs belong here and how they were produced.</p>
+
+<div class="highlight">
+  <strong>Workflow</strong> = CLAUDE.md + skills + agents + declared references. This is the "how" — how work gets done here, what standards apply, what external skills are available.<br><br>
+  <strong>Outputs</strong> = findings, drafts, src, articles. This is the "what" — the actual products of work. These must always be governed by the workflow they sit alongside.<br><br>
+  <strong>The pairing is the point.</strong> You can read a workspace's workflow and know exactly what kind of outputs belong here and how they were produced.
+</div>
+
+<h3>Cross-referencing vs contamination</h3>
+<p>A workspace that declares cross-references in its workflow (like Article Pipeline referencing Researcher and Writer skills) is clean by design. The workflow explicitly says "I use these external skills," so outputs produced under that workflow are coherent — they were made with full awareness of the combined process.</p>
+<p>The danger is undeclared references: an agent working in the Researcher workspace suddenly needing Writer skills that aren't in Researcher's workflow. If it proceeds, the outputs (writing artifacts in findings/) are orphaned — governed by no workflow. The orchestrator's job is to catch this before it happens.</p>
+
+<!-- ======================= DECISION RULES ======================= -->
+<h2>Decision rules</h2>
+<div class="rules">
+  <div class="rule-card">
+    <div class="rule-num">Rule 1</div>
+    <div class="rule-title">Declared refs &rarr; run</div>
+    <div class="rule-desc">If a workspace's workflow explicitly references skills from other workspaces, run confidently. The outputs are governed by a workflow that knows about the dependency.</div>
+  </div>
+  <div class="rule-card">
+    <div class="rule-num">Rule 2</div>
+    <div class="rule-title">Undeclared refs &rarr; pause</div>
+    <div class="rule-desc">If the agent needs skills from a workspace not declared in the current workflow, the orchestrator pauses and asks. Outputs would mismatch the process.</div>
+  </div>
+  <div class="rule-card">
+    <div class="rule-num">Rule 3</div>
+    <div class="rule-title">Mismatch &rarr; new workspace</div>
+    <div class="rule-desc">Rather than contaminate an existing workspace, spin up a purpose-built one with a merged workflow. Original workspaces stay clean.</div>
+  </div>
+</div>
+
+<!-- ======================= INDUSTRY VALIDATION ======================= -->
+<h2>Industry validation</h2>
+<p>How does this architecture compare to established patterns? Here's an honest assessment — what aligns with industry best practices, what's distinctive, and what gaps remain.</p>
+
+<h3>Aligned with industry standards</h3>
+<div class="check-grid">
+  <div class="check-card pass">
+    <div class="check-icon" style="color:var(--green)">&check;</div>
+    <div class="check-title">Supervisor / worker pattern</div>
+    <div class="check-desc">The orchestrator-as-supervisor, workspaces-as-workers model is the most common enterprise pattern. Used by Microsoft Azure, AWS Bedrock, Google ADK, and LangChain as the default multi-agent architecture.</div>
+  </div>
+  <div class="check-card pass">
+    <div class="check-icon" style="color:var(--green)">&check;</div>
+    <div class="check-title">Workspace isolation</div>
+    <div class="check-desc">Industry consensus: clear workspace isolation, defined file ownership, and explicit handoff protocols prevent conflicts. Our architecture enforces this structurally — each workspace owns its files and workflow.</div>
+  </div>
+  <div class="check-card pass">
+    <div class="check-icon" style="color:var(--green)">&check;</div>
+    <div class="check-title">Context separation via subagents</div>
+    <div class="check-desc">Anthropic's own guidance emphasizes keeping detailed context isolated within sub-agents while the lead focuses on synthesis. Our workspace-scoped CLAUDE.md achieves this natively — each agent inherits only its workspace context.</div>
+  </div>
+  <div class="check-card pass">
+    <div class="check-icon" style="color:var(--green)">&check;</div>
+    <div class="check-title">Simple composable patterns</div>
+    <div class="check-desc">Anthropic's building-effective-agents guide: "the most successful implementations use simple, composable patterns rather than complex frameworks." This architecture is pure files + SDK calls — no framework dependency.</div>
+  </div>
+  <div class="check-card pass">
+    <div class="check-icon" style="color:var(--green)">&check;</div>
+    <div class="check-title">Skills as progressive disclosure</div>
+    <div class="check-desc">LangChain identifies this pattern: agent loads specialized knowledge on-demand. Our .claude/skills/ directories do exactly this — the agent discovers skills at session start based on workspace context.</div>
+  </div>
+</div>
+
+<h3>Distinctively stronger than standard</h3>
+<div class="check-grid">
+  <div class="check-card unique">
+    <div class="check-icon" style="color:var(--purple)">&starf;</div>
+    <div class="check-title">Coherence invariant</div>
+    <div class="check-desc">Most frameworks talk about workspace isolation as conflict prevention. Our invariant is stronger: workflow and outputs must match. This isn't just about preventing file conflicts — it's about ensuring every output is governed by a workflow that accounts for it.</div>
+  </div>
+  <div class="check-card unique">
+    <div class="check-icon" style="color:var(--purple)">&starf;</div>
+    <div class="check-title">Declared vs undeclared reference detection</div>
+    <div class="check-desc">Most frameworks offer full access or full isolation. Our middle ground — declared refs are fine, undeclared refs trigger a pause — is more nuanced. It allows composition while preserving coherence.</div>
+  </div>
+  <div class="check-card unique">
+    <div class="check-icon" style="color:var(--purple)">&starf;</div>
+    <div class="check-title">Dynamic workspace creation</div>
+    <div class="check-desc">Spinning up a new workspace when a coherence violation is detected is a distinctive pattern. Most frameworks either force the task into an existing environment or require manual environment setup. Ours automates the decision.</div>
+  </div>
+  <div class="check-card unique">
+    <div class="check-icon" style="color:var(--purple)">&starf;</div>
+    <div class="check-title">Orchestrator as workflow-only entity</div>
+    <div class="check-desc">The explicit design that the orchestrator produces no mission outputs — only workflows, registry, and examples — creates a clean separation of concerns. Most frameworks let the supervisor also do work, which muddies the routing role.</div>
+  </div>
+</div>
+
+<h3>Gaps to consider</h3>
+<div class="check-grid">
+  <div class="check-card gap">
+    <div class="check-icon" style="color:var(--amber)">&#9888;</div>
+    <div class="check-title">Observability / logging</div>
+    <div class="check-desc">No mention of tracking agent interactions, token costs, or session histories across workspaces. Industry best practice includes communication logs and per-agent monitoring. Consider adding a shared log directory or event store the orchestrator can read.</div>
+  </div>
+  <div class="check-card gap">
+    <div class="check-icon" style="color:var(--amber)">&#9888;</div>
+    <div class="check-title">Error handling / retry</div>
+    <div class="check-desc">What happens when a spawned agent fails mid-task? The current architecture doesn't specify fallback, retry, or partial-result recovery strategies. Frameworks like Temporal solve this with durable execution; Claude's Agent SDK has basic retry built in.</div>
+  </div>
+  <div class="check-card gap">
+    <div class="check-icon" style="color:var(--amber)">&#9888;</div>
+    <div class="check-title">Cost management</div>
+    <div class="check-desc">Agent teams use approximately 7x the tokens of a single session. No mechanism for budget limits, model routing (Opus for hard tasks, Haiku for simple ones), or cost tracking per workspace. The Agent SDK supports model selection per spawn — worth codifying in the orchestrator's routing rules.</div>
+  </div>
+  <div class="check-card gap">
+    <div class="check-icon" style="color:var(--amber)">&#9888;</div>
+    <div class="check-title">Workspace versioning</div>
+    <div class="check-desc">Dynamic workspaces accumulate. No strategy for archiving completed workspaces, tracking workspace lineage (which workspaces were merged to create this one), or cleaning up stale environments. Consider git-based versioning or a lifecycle policy.</div>
+  </div>
+</div>
+
+<div class="highlight-amber">
+  <strong>Overall assessment:</strong> The architecture is sound and aligns with the industry's strongest patterns — supervisor/worker orchestration, workspace isolation, context separation, and simple composable design. The coherence invariant and cross-reference detection are genuinely novel contributions that go beyond what standard frameworks enforce. The gaps (observability, error handling, cost, versioning) are operational concerns you'd address when moving from design to production — they don't undermine the architecture itself.
+</div>
+
+<div class="footer-note">
+  Architecture reference — dynamic workspace orchestration with Claude Agent SDK &middot; March 2026
+</div>
+
+<script>
+var allWs = ['ws-research','ws-writer','ws-coder','ws-article'];
+var allRt = ['rt-research','rt-writer','rt-coder','rt-article'];
+
+var scenes = [
+  {
+    active: ['ws-research'],
+    runtime: ['rt-research'],
+    referenced: [],
+    arrow: 'cwd = ~/workspaces/researcher',
+    narration: 'Pure workspace run. Task is fully within the Researcher domain. You (or the orchestrator) spawn an agent into the Researcher workspace. It loads Researcher\u2019s CLAUDE.md and skills, runs the research, writes outputs to findings/. Workflow and outputs stay coherent. This is the simplest and most common scenario.',
+    showNew: false
+  },
+  {
+    active: ['ws-article'],
+    runtime: ['rt-article'],
+    referenced: ['ws-research','ws-writer'],
+    arrow: 'cwd = ~/workspaces/article-pipeline',
+    narration: 'Cross-referencing workspace. The Article Pipeline declares references to Researcher and Writer skills in its workflow. This is safe by design \u2014 its CLAUDE.md says "use research skills for sourcing, writing skills for prose." Outputs are governed by a workflow that accounts for both domains. Coherence is maintained because the references are declared.',
+    showNew: false
+  },
+  {
+    active: ['ws-research'],
+    runtime: ['rt-research'],
+    referenced: ['ws-writer'],
+    arrow: 'cwd = ~/workspaces/researcher',
+    narration: 'Undeclared reference detected. A session is running in Researcher, but mid-task it needs Writer\u2019s style-guide skill. Researcher\u2019s workflow doesn\u2019t declare that dependency. The orchestrator catches this mismatch and pauses: "This task needs writing skills not in this workspace\u2019s workflow. Run here anyway, or spin up a dedicated workspace?" This applies whether you started the session or the orchestrator did.',
+    showNew: false
+  },
+  {
+    active: [],
+    runtime: [],
+    referenced: [],
+    arrow: 'cwd = ~/workspaces/research-brief-mar27',
+    narration: 'New workspace spun up. The orchestrator creates research-brief-mar27/ with a merged CLAUDE.md that explicitly references both Researcher and Writer skills. Outputs land in a coherent new home with a workflow that governs them. Original workspaces stay clean. The new workspace is purpose-built for this hybrid mission.',
+    showNew: true
+  }
+];
+
+var newWsHtml = '<div class="ws new-spawn" style="max-width:50%">' +
+  '<div class="ws-name">research-brief-mar27</div>' +
+  '<div class="ws-sub">Dynamically created for this task</div>' +
+  '<div class="ws-divider"></div>' +
+  '<div class="ws-section"><span class="tag tag-wf">workflow</span> <span class="tag tag-merged">merged</span></div>' +
+  '<div class="ws-item">CLAUDE.md (merged context)</div>' +
+  '<div class="ws-ref"><span class="ref-arrow">\u2192</span> from: ~/researcher/.claude/skills/</div>' +
+  '<div class="ws-ref"><span class="ref-arrow">\u2192</span> from: ~/writer/.claude/skills/</div>' +
+  '<div class="ws-divider"></div>' +
+  '<div class="ws-section"><span class="tag tag-out">outputs</span></div>' +
+  '<div class="ws-item">brief/</div>' +
+  '<div style="margin-top:8px;display:flex;align-items:center;gap:4px">' +
+  '<span class="pulse-dot on" style="background:var(--amber)"></span>' +
+  '<span class="runtime-text" style="color:var(--amber)">Runtime active (new)</span></div></div>';
+
+function setScene(i) {
+  var s = scenes[i];
+  document.querySelectorAll('.scenario-btn').forEach(function(b, j) {
+    b.classList.toggle('active', j === i);
+  });
+  allWs.forEach(function(id) {
+    document.getElementById(id).classList.remove('active','referenced');
+  });
+  allRt.forEach(function(id) {
+    document.getElementById(id).style.opacity = '0';
+  });
+  s.active.forEach(function(id) {
+    document.getElementById(id).classList.add('active');
+  });
+  s.runtime.forEach(function(id) {
+    document.getElementById(id).style.opacity = '1';
+  });
+  s.referenced.forEach(function(id) {
+    document.getElementById(id).classList.add('referenced');
+  });
+  document.getElementById('spawn-label').textContent = s.arrow;
+  document.getElementById('narration').textContent = s.narration;
+  var na = document.getElementById('new-ws-area');
+  if (s.showNew) {
+    na.innerHTML = newWsHtml;
+    na.style.opacity = '1';
+    na.style.maxHeight = '280px';
+  } else {
+    na.style.opacity = '0';
+    na.style.maxHeight = '0';
+  }
+}
+setScene(0);
+</script>
+</body>
+</html>

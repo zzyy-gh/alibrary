@@ -10,7 +10,7 @@ The build is structured in four phases. Each phase produces a working system; la
 Get the storage layer and the indexer working. The library can accept knowledge and store it.
 
 - [x] **Folder initialisation:** Create the top-level folders (`/inbox/`, `/nuggets/`). Initialise Git for version control.
-- [x] **Responsibility patterns:** Research and document patterns for dividing work across multiple LLM agents (specialization, delegation, observation, pipelines). Separate `meta/` file drawing from `design-principles.md` and external frameworks. Informs how agents, skills, and runtime hooks are structured.
+- [x] **Responsibility patterns:** Research and document patterns for dividing work across multiple LLM agents (specialization, delegation, observation, pipelines). Separate `meta/` file drawing from `agentic-design-principles.md` and external frameworks. Informs how agents, skills, and runtime hooks are structured.
 - [x] **Update meta:** Update meta and claude.md based on new design principles and agent patterns.
 - [x] **Setup hooks:** Design and setup hooks for meta changes.
 - [x] **Indexer agent v1:** Build a minimal indexer that catalogues raw items (frontmatter, tags, embeddings) per `meta/schemas.md`.
@@ -24,7 +24,7 @@ Get the retriever working. The library can answer questions.
 - [x] **Vector index:** Integrated OpenAI `text-embedding-3-small` with ChromaDB vector store. `embeddings.py` handles generation, storage, and search.
 - [x] **Retriever agent v1:** Multi-strategy search (tag, semantic, keyword) with maturity-aware search. `retriever.py` + `retriever/AGENT.md`.
 - [x] **Tool interface:** MCP stdio server (`mcp_retriever.py`) exposes `library_search` tool.
-- [x] **Move generic docs to inbox:** Moved `design-principles.md`, `agent-composition.md`, `agent-flattening.md`, `responsibility-patterns.md` to `/inbox/` with raw item frontmatter.
+- [x] **Move generic docs to inbox:** Moved `agentic-design-principles.md`, `agent-composition.md`, `agent-flattening.md`, `agent-responsibility-patterns.md` to `/inbox/` with raw item frontmatter.
 - **Deliverable:** Any agent can query the library and get useful results. Gaps are tracked.
 
 ### Phase 3 — Refinement (Week 5–7)

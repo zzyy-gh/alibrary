@@ -14,7 +14,7 @@ maturity: stub
 
 # Agent Composition
 
-Rules for structuring agents, skills, and teams. Companion to `design-principles.md` (foundational principles), `agent-flattening.md` (technique for making agents team-ready), and `responsibility-patterns.md` (how to divide work across agents).
+Rules for structuring agents, skills, and teams. Companion to `agentic-design-principles.md` (foundational principles), `agent-flattening.md` (technique for making agents team-ready), and `agent-responsibility-patterns.md` (how to divide work across agents).
 
 ## 1. Agents as Personas
 
