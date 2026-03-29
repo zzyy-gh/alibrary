@@ -44,6 +44,17 @@ Advanced features that make the library proactively useful.
 - [ ] **Quality dashboard:** Library health view — maturity distribution, broken links, orphaned raw items, coverage heatmap, recent activity. Datasette/Metabase for health metrics dashboard.
 - **Deliverable:** The library is a self-improving, self-aware knowledge system with proactive gap filling and user-prompted governance/agent updates.
 
+### Phase 5 — Embedding Methods and Comparison
+
+Different embedding methods reveal different connections. The librarian should orchestrate multiple embedding processes and the system should make the trade-offs visible.
+
+- [ ] **Librarian embedding orchestration:** The librarian owns the embedding lifecycle — selects methods per item, triggers re-embedding on content change, and delegates embedding work to appropriate providers. Embedding iteration and self-learning (contextual retrieval, RL-refined vectors) are part of the librarian's refinement loop, not a separate pipeline.
+- [ ] **Multi-method embeddings:** Support multiple embedding methods per item — dense (current baseline), sparse (BM25/SPLADE), contextual (LLM-prepended context), and hybrid. Store as separate collections. The librarian decides which methods to apply and when to re-run them.
+- [ ] **Cross-provider comparison:** Run the same embedding method across multiple providers (Gemini, Voyage, Cohere, open-source) to ensure statistical significance. Same corpus, same queries, different providers — measure Recall@k, MRR, and qualitative discovery value per provider.
+- [ ] **Visual comparison dashboard:** Extend `embeddings.html` to show multiple embedding spaces side by side (e.g., dense vs contextual vs sparse). Color-code by tags, maturity, or item type. Let users toggle between methods to see how item clustering shifts — making the scoping act visible. Highlight items that move most between representations (high movement = relationships that are method-dependent).
+- [ ] **Retrieval vs discovery metrics:** Track and visualize two separate scores per query — retrieval precision (did we find what was asked for?) and discovery value (did we surface something unexpected?). Compare across methods to show which method serves which need.
+- **Deliverable:** The library can show how the same knowledge looks different under different embedding methods, making representation trade-offs concrete and visual. The librarian manages all of this as part of its refinement responsibilities.
+
 ## Next Steps
 
 1. **Validate the schemas:** Review the raw item and nugget schemas. Adjust fields based on specific domain needs.
