@@ -5,9 +5,9 @@ source_type: manual
 tags:
 - planning
 - project-management
-- decision-making
-- execution
 - framework
+- execution
+- mental-models
 created_at: '2026-03-29T00:00:00Z'
 created_by: unknown
 maturity: summary
@@ -25,6 +25,20 @@ A thinking framework for planning any kind of work — development, research, op
 Pick the perspective that matches your current uncertainty. Starting something new? Start with Purpose. Stuck mid-project? Try Structure or Motion. Rotate as needed — these aren't phases, they're lenses.
 
 Match the weight of your planning to the weight of the problem. A weekend project doesn't need a pre-mortem. A two-year initiative probably does. Not every section here applies to every project — use what fits, skip what doesn't. The goal is to think well, not to think exhaustively.
+
+---
+
+## Simplify relentlessly
+
+This applies everywhere — purpose, structure, motion. The natural tendency in planning is to add: more steps, more layers, more distinctions, more process. Fight it. Every separation, every intermediate stage, every abstraction is a cost. It must solve a real problem to justify its existence.
+
+In **purpose**: don't solve problems you don't have. Don't add goals "while we're at it." Every goal you add multiplies the work non-linearly — it's not one more thing, it's one more thing that interacts with everything else.
+
+In **structure**: prefer flat over nested. If two things can be one thing without confusion, they should be one thing. Don't create layers to "stay organized" — create them only when a real boundary exists. A three-step process that could be two steps has a wasted step, even if each step is well-defined.
+
+In **motion**: don't create process overhead that doesn't directly help you move. Status meetings, elaborate tracking, detailed documentation of intermediate work — each one is a drag on forward motion unless it's earning its keep.
+
+The method: dump everything out first, *then* simplify. Get all the ideas, goals, tasks, and concerns out of your head. Then look at the pile and ask: what can I throw away? What can I merge? What's actually one thing pretending to be three? The first pass is expansive. The second pass is reductive. Most people skip the second pass.
 
 ---
 
@@ -48,11 +62,11 @@ Be aware that your mental model shapes what you even notice. A developer sees te
 
 ### Has this been solved before?
 
-Before building, search. Before searching, articulate what you're looking for precisely enough that you'd recognize a match. Most problems have been solved — the skill is finding and adapting, not reinventing. Even partial solutions or analogous work in other domains can save significant effort.
+Before building, search. Before searching, articulate what you're looking for precisely enough that you'd recognize a match. Most problems have been solved — the skill is finding and adapting, not reinventing. Even partial solutions or analogous work in other domains can save significant effort. In research contexts, this becomes literature review — a discipline in itself. Don't just search; systematically map prior art, related work, and adjacent fields.
 
 ### What's the minimum version?
 
-What's the smallest thing that tests whether this is worth doing at all? This isn't about shipping something bad — it's about learning whether you're solving the right problem before investing fully. Cut scope to the core question.
+What's the smallest thing that tests whether this is worth doing at all? This isn't about shipping something bad — it's about learning whether you're solving the right problem before investing fully. Cut scope to the core question. For a product or business, this includes validating demand — the minimum version isn't just "does this work?" but "does anyone want this?"
 
 ### Pre-mortem
 
@@ -90,11 +104,7 @@ Where are the clean seams? Good boundaries make delegation possible, parallel wo
 
 ## 3. Motion — How to move and stay on track
 
-Everything here is about making effective progress.
-
-### Urgent vs. important
-
-Urgent work plans itself — you react to it. Important-but-not-urgent work is where planning matters most, because it's what gets neglected. Most planning effort should go toward work that's important but has no deadline screaming at you. That's where the highest-leverage investments hide.
+Everything here is about making effective progress. Urgent work plans itself — you react to it. The important-but-not-urgent work is where planning matters most, because it's what gets neglected and where the highest-leverage investments hide.
 
 ### What unblocks the most?
 
@@ -116,19 +126,9 @@ Friction in the process compounds. If you're doing something repeatedly and it's
 
 Plan on paper, in files, on boards — not in your head. You can't inspect what's only in memory. You can't share it, you can't diff it, and you'll lose it when context switches. The medium doesn't matter; the externalization does.
 
-Start with a brain dump — get everything out before organizing. The organizing is useless if you're still holding things in memory. Dump first, structure second.
+### Verify and replan
 
-### Sanity checks
-
-Verify as you go — both when forming the plan and during execution. Are the facts you're building on actually true? Do the parts of the plan contradict each other? Does the plan still logically connect to the goal, or has it drifted into activity that feels productive but doesn't advance anything? This is different from replanning (adapting to change) — it's catching internal rot: circular reasoning, redundant work, or steps that made sense three decisions ago but no longer do.
-
-### Feedback loops
-
-How will you know you're on track? Define the signal before you start. Tests, reviews, metrics, user reactions — whatever fits. Without a feedback loop, you can drift for a long time before noticing.
-
-### Checkpoints for replanning
-
-Plans decay. Schedule moments to ask: is this plan still the right plan? Not just "am I on track" but "is the track still right." The world changes, you learn things, priorities shift. A plan that doesn't evolve with reality becomes a trap.
+Three things to check as you go. *Internal consistency:* do the parts of the plan contradict each other? Are you doing redundant work, or following steps that made sense three decisions ago but no longer do? *External signal:* how will you know you're on track? Define the signal before you start — tests, reviews, metrics, user reactions. Without a feedback loop, you can drift a long time before noticing. *Direction:* is this plan still the right plan? Not just "am I on track" but "is the track still right." Plans decay. A plan that doesn't evolve with reality becomes a trap.
 
 ---
 
@@ -142,22 +142,6 @@ A short reference for common ways planning goes wrong.
 - **Confusing the plan with the goal.** The plan is a tool, not a commitment. Completing every task on the plan is worthless if it doesn't achieve the goal.
 - **Local optimization.** Each step is efficient but the sequence is wrong. Doing the right things in the wrong order.
 - **Planning as procrastination.** Planning feels productive. At some point you have to start. If you've answered the Purpose questions, you know enough to move. Timebox your planning — if you're still planning after the timebox, that's a signal the problem is too big (decompose it) or you're avoiding starting.
-
----
-
-## Applying this to...
-
-### Research
-
-The balance shifts heavily toward the unknown. Most research work lives in Structure's "emergent" category — you learn what the subtasks are by doing them. Lean on Purpose ("what's the actual question?") and Motion's fail fast ("what's the cheapest experiment that could disprove the hypothesis?"). "Has this been solved before?" becomes literature review — a discipline in itself. Don't just search; systematically map prior art, related work, and adjacent fields. Building on existing findings is the norm, not a shortcut.
-
-### Building a business
-
-Purpose is where most of the leverage is. First principles, minimum version, and pre-mortem are the core moves. Add one thing the framework doesn't emphasize enough: validate demand before building. The minimum version isn't just "does this work?" — it's "does anyone want this?" Resource constraints (budget, runway, team size) become a first-class planning input, not background context. In Motion, urgent vs. important is critical — founders drown in urgent and neglect the important work that compounds.
-
-### Software development
-
-The framework maps most directly here. Structure (decomposition, dependencies, boundaries) is the bread and butter. Pay extra attention to "has this been solved before?" — libraries, frameworks, and existing patterns are almost always better than building from scratch. Fail fast applies to technical risk: build the uncertain integration before the well-understood CRUD layer.
 
 ---
 
