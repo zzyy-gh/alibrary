@@ -49,4 +49,4 @@ python .claude/scripts/cli.py search --query "your question"
 
 - `meta/vision.md` — design principles
 - `meta/agents.md` — how the agents work
-- `inbox/improving-vector-search-and-knowledge-representation.md` — research on better embedding and search techniques
+- `inbox/knowledge-representation-theory-and-practice.md` — epistemology of knowledge representation and practical vector search techniques
