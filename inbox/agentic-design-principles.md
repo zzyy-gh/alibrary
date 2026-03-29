@@ -14,6 +14,8 @@ maturity: summary
 
 # Design Principles for LLM-Native Pipelines
 
+> **Framework context:** These principles are inspired by and aligned with Claude Code's architecture — prose-driven agents, filesystem-based state, flat orchestration. The patterns themselves are general, but the design decisions assume an LLM runtime with Claude Code's agent/skill model.
+
 Core concepts for building multi-step workflows where an LLM is the runtime, not a component. Original in arrangement, derivative in every other way.
 
 ## 1. Prose as program
@@ -36,7 +38,7 @@ The single most consequential design decision: state lives on disk, not in the L
 
 ## 3. Layered ownership, flat execution
 
-The documentation hierarchy mirrors the responsibility hierarchy. Each layer owns exactly one concern: project files describe structure, agent files describe processes, skill files describe transformations. Keep orchestration flat — the orchestrator spawns workers, workers don't spawn their own workers.
+The documentation hierarchy mirrors the responsibility hierarchy. Each layer owns exactly one concern: project files describe structure, agent files describe judgment-driven work (personas or workflows that decide what to do next), skill files describe deterministic transformations (bounded units that produce predictable output from a given input). Keep orchestration flat — the orchestrator spawns workers, workers don't spawn their own workers.
 
 The same principle applies to the filesystem: every folder should have a uniform sharing scope. Shared, reusable artifacts live in known shared folders; artifacts specific to a session or run stay local to that subfolder. If a folder mixes shared and local concerns, split it.
 

@@ -14,6 +14,8 @@ maturity: summary
 
 # Agent Flattening
 
+> **Framework context:** Flattening patterns here are inspired by and aligned with Claude Code's agent/skill model. Claude Code handles much of the mechanical complexity (context isolation for forked skills, subagent spawning), but the conceptual work of flattening — removing context assumptions and hardcoded orchestration — remains the author's responsibility.
+
 Companion to `agent-composition.md` (the rules), `agentic-design-principles.md` (foundational principles), and `agent-responsibility-patterns.md` (how to divide work across agents).
 
 Flattening is the process of restructuring a standalone agent so it can work as a teammate or subagent. A standalone agent may rely on forked skills, assume full context, or hardcode orchestration — all things that break in team roles, where the agent can't spawn subagents and has a constrained context window.
@@ -55,3 +57,5 @@ Splitting applies when a persona is invoked as a **subagent** — it has no orch
 ## Forked Skills
 
 Always respect forked skills — separate them out to flatten. A forked skill requires its own context (a clean brain, a different model, or heavy isolated processing). Since teammates cannot spawn subagents, any persona with a forked skill must have that skill extracted and handled by the orchestrator as a separate subagent invocation. Keeping a forked skill inside a teammate breaks the flat execution model.
+
+Note: forking is an execution concern, not a definitional one — a skill is deterministic whether it runs inline or forked. Claude Code largely handles the mechanics of context isolation, so the practical cost of forking is low. The important part of flattening is the conceptual restructuring (removing context assumptions, extracting hardcoded orchestration), not the fork itself.
