@@ -4,9 +4,10 @@ title: Design Principles for LLM-Native Pipelines
 source_type: manual
 tags:
 - llm-native
-- agentic-design-principles
+- agentic-design
 - pipelines
-- architecture
+- externalized-state
+- orchestration
 created_at: 2026-03-22 00:00:00+00:00
 created_by: migration
 maturity: summary
@@ -39,6 +40,8 @@ The single most consequential design decision: state lives on disk, not in the L
 ## 3. Layered ownership, flat execution
 
 The documentation hierarchy mirrors the responsibility hierarchy. Each layer owns exactly one concern: project files describe structure, agent files describe judgment-driven work (personas or workflows that decide what to do next), skill files describe deterministic transformations (bounded units that produce predictable output from a given input). Keep orchestration flat — the orchestrator spawns workers, workers don't spawn their own workers.
+
+The workspace-level file (e.g., CLAUDE.md) should contain only high-level concerns: purpose, main offering, setup, standard practices, culture, and guidelines. Specific workflows belong in agent files, not the workspace file. This keeps the workspace file stable and readable — it describes *what this place is*, not *how every job gets done*. When workflows live in the workspace file, it grows unboundedly and mixes concerns that change at different rates.
 
 The same principle applies to the filesystem: every folder should have a uniform sharing scope. Shared, reusable artifacts live in known shared folders; artifacts specific to a session or run stay local to that subfolder. If a folder mixes shared and local concerns, split it.
 
