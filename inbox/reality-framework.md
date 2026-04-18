@@ -32,13 +32,14 @@ Interactive HTML document presenting a first-principles framework for understand
 
 **The loop**: movement reshapes structure; structure reveals what movement to make next. This cycle — between what we have and what we learn to build — is described as the engine of progress.
 
-## Five core principles
+## Six core principles
 
 1. Structure and movement are two lenses, not two things — the distinction is a practical tool, not an ontological claim.
 2. No categories, only properties — distinctions between sensor and model are quantitative, not qualitative.
 3. Interfaces compose — the combination can perceive phenomena invisible to any component alone.
 4. Causation is resolution-dependent — the arrow of causation is a property of the observing interface, not of the phenomenon itself.
 5. Agency is in the conscious shaping — the framework helps distinguish what is within our control from what is not.
+6. Structure has hierarchy — some structures depend on others; movement at a higher level cascades further. When stuck, the question is often not what change to make, but what level to make it at.
 
 ## Interfaces catalogued
 
