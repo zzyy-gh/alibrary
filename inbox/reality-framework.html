@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Structure & Movement — A Working Framework</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FAFAF8;
+  --white: #FFFFFF;
+  --ink: #1C1C1C;
+  --ink2: #444;
+  --ink3: #777;
+  --ink4: #AAA;
+  --border: #E2E0DB;
+  --border2: #D0CEC8;
+  --accent: #B8432A;
+  --serif: 'Source Serif 4', Georgia, serif;
+  --sans: 'DM Sans', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container { max-width: 700px; margin: 0 auto; padding: 40px 24px 72px; }
+
+h1 { font-family: var(--serif); font-size: 28px; font-weight: 500; margin-bottom: 12px; }
+
+.opening {
+  font-size: 14px; color: var(--ink2); line-height: 1.75;
+  margin-bottom: 32px; max-width: 620px;
+}
+
+.opening p { margin-bottom: 10px; }
+.opening p:last-child { margin-bottom: 0; }
+
+/* Tabs */
+.tabs { display: flex; gap: 2px; margin-bottom: 36px; border-bottom: 1px solid var(--border); }
+.tab {
+  padding: 8px 16px 10px; font-size: 13px; font-weight: 500;
+  color: var(--ink3); cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: color 0.15s; user-select: none;
+}
+.tab:hover { color: var(--ink2); }
+.tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* Labels */
+.label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink4); margin-bottom: 12px;
+}
+
+.section-intro {
+  font-size: 14px; color: var(--ink2); line-height: 1.7;
+  margin-bottom: 20px; max-width: 580px;
+}
+
+/* Framework boxes */
+.fw-pair { display: flex; gap: 14px; margin-bottom: 20px; }
+.fw-box {
+  flex: 1; padding: 20px 18px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--white);
+}
+.fw-box-kicker {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.fw-box-title {
+  font-family: var(--serif); font-size: 18px; font-weight: 600;
+  margin-bottom: 8px; line-height: 1.25;
+}
+.fw-box-body { font-size: 13px; color: var(--ink2); line-height: 1.65; }
+
+.fw-loop {
+  text-align: center; font-family: var(--mono); font-size: 10px;
+  color: var(--ink4); margin: 4px 0 24px; line-height: 1.6;
+}
+
+/* Principle cards */
+.principles { margin-bottom: 24px; }
+.principle {
+  padding: 12px 16px; border-left: 2px solid var(--border);
+  margin-bottom: 8px; background: var(--white); border-radius: 0 6px 6px 0;
+}
+.principle-title {
+  font-family: var(--serif); font-size: 14px; font-weight: 600;
+  margin-bottom: 3px; line-height: 1.3;
+}
+.principle-body { font-size: 12.5px; color: var(--ink2); line-height: 1.65; }
+
+/* Open questions */
+.questions {
+  padding: 16px 18px; border-radius: 8px;
+  background: var(--white); border: 1px solid var(--border);
+}
+.question {
+  font-size: 12.5px; color: var(--ink3); line-height: 1.7;
+  padding-left: 18px; position: relative; margin-bottom: 4px;
+}
+.question::before {
+  content: '?'; position: absolute; left: 0;
+  font-family: var(--mono); font-size: 11px; color: var(--ink4);
+}
+
+/* Interface cards */
+.iface-list { display: flex; flex-direction: column; gap: 6px; }
+.iface-card {
+  padding: 12px 16px; border-radius: 8px; background: var(--white);
+  border: 1px solid var(--border); cursor: pointer; transition: border-color 0.15s;
+}
+.iface-card:hover { border-color: var(--border2); }
+.iface-top { display: flex; align-items: center; gap: 10px; }
+.iface-icon {
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.iface-name { font-size: 13px; font-weight: 600; }
+.iface-oneliner { font-size: 11px; color: var(--ink3); margin-top: 1px; }
+
+.metrics {
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px;
+}
+.metric-label {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink4); margin-bottom: 3px;
+}
+.metric-bar { height: 4px; background: #EEEDEA; border-radius: 2px; overflow: hidden; }
+.metric-fill { height: 100%; border-radius: 2px; }
+.metric-note { font-size: 10.5px; color: var(--ink3); line-height: 1.4; margin-top: 2px; }
+
+.iface-extra {
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);
+}
+.extra-label {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink4); margin-bottom: 2px;
+}
+.extra-text { font-size: 12px; color: var(--ink2); line-height: 1.55; margin-bottom: 8px; }
+.extra-text.accent { font-family: var(--serif); font-style: italic; }
+
+/* Composition */
+.comp-card {
+  padding: 14px 16px; border-radius: 8px; background: var(--white);
+  border: 1px solid var(--border); margin-bottom: 8px;
+}
+.comp-pieces { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 6px; }
+.comp-tag {
+  font-family: var(--mono); font-size: 10px; padding: 2px 8px;
+  border-radius: 4px; border: 1px solid var(--border);
+}
+.comp-plus { font-size: 13px; color: var(--ink4); }
+.comp-arrow { font-size: 13px; color: var(--accent); }
+.comp-result { font-size: 13px; font-weight: 600; }
+.comp-desc { font-size: 12px; color: var(--ink3); line-height: 1.6; }
+
+/* Projects */
+.proj-card {
+  padding: 12px 16px; border-radius: 8px; background: var(--white);
+  border: 1px solid var(--border); margin-bottom: 6px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.proj-card:hover { border-color: var(--border2); }
+.proj-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.proj-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.proj-desc { font-size: 12px; color: var(--ink3); line-height: 1.5; }
+.badge {
+  font-family: var(--mono); font-size: 10px; padding: 2px 9px;
+  border-radius: 8px; flex-shrink: 0; margin-left: 12px;
+}
+.badge-wk { background: #EEF6F0; color: #2A7A4A; border: 1px solid #C8E0D0; }
+.badge-wks { background: #FFF6E5; color: #8A6A1A; border: 1px solid #E0D0A8; }
+.proj-detail { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.proj-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; margin-bottom: 8px; }
+.proj-hope {
+  margin-top: 8px; padding: 8px 12px; border-radius: 6px; background: #F8F7F4;
+  font-family: var(--serif); font-style: italic; font-size: 13px;
+  color: var(--ink2); line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+  .fw-pair { flex-direction: column; }
+  .metrics { grid-template-columns: 1fr; }
+  h1 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Structure & Movement</h1>
+  <div class="opening">
+    <p>
+      This framework attempts to understand reality from first principles by observing that anything can be seen through two lenses: <strong>structure</strong> — the arrangements, patterns, and interfaces through which information flows — and <strong>movement</strong> — the actions, changes, and processes that reshape those arrangements over time. These are not separate things. A law of movement is itself a structure. A structure is never truly still. They are two perspectives on the same reality, useful precisely because they reveal different aspects of it.
+    </p>
+    <p>
+      The practical value is in what this reveals about <strong>control</strong>. Some structures and movements are within our agency — which interfaces we build, which compositions we try, which direction we pursue. Others are not — the environment changes, phenomena behave as they behave, other systems push back. Good practice is to be precise about what we can consciously shape, design it well, and build resilience for everything we cannot. Because structure is described here through continuous, measurable properties, it offers a foundation for systematic optimisation and discovery — whether by researchers or by AI exploring the space of possible compositions.
+    </p>
+    <p>
+      The biosignal work below — heart-brain coupling, physiological sensing, adaptive interfaces — is the current application.
+    </p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="framework">Framework</div>
+    <div class="tab" data-tab="interfaces">Interfaces</div>
+    <div class="tab" data-tab="movement">Movement</div>
+  </div>
+
+  <!-- ====== FRAMEWORK ====== -->
+  <div class="panel active" id="framework">
+
+    <div class="fw-pair">
+      <div class="fw-box">
+        <div class="fw-box-kicker" style="color:#2B5E8A;">Lens 1</div>
+        <div class="fw-box-title" style="color:#2B5E8A;">Structure</div>
+        <div class="fw-box-body">
+          The arrangements through which information is transduced, connected, and made legible. In this work, we call them <em>interfaces</em>. Sensors, models, language, and displays all belong to the same class — differing on continuous properties like input bandwidth, prior knowledge, resolution, and output fidelity, not on kind. A sufficiently powerful sensor can replace a model. A sufficiently knowledgeable model can replace a sensor. Interfaces also compose: multiple interfaces working together form a combined interface with emergent properties.
+        </div>
+      </div>
+      <div class="fw-box">
+        <div class="fw-box-kicker" style="color:#1A7A4A;">Lens 2</div>
+        <div class="fw-box-title" style="color:#1A7A4A;">Movement</div>
+        <div class="fw-box-body">
+          The processes that change structure over time. All action is movement. <em>Learning</em> is the specific form of movement that reshapes structure itself — not just operating through interfaces, but improving them. The environment also moves, changing structure whether we intend it or not.
+        </div>
+      </div>
+    </div>
+
+    <div class="fw-loop">
+      ↻ &nbsp;Movement reshapes structure. Structure reveals what movement to make next.
+    </div>
+
+    <div class="label">Core principles</div>
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-title">Structure and movement are two lenses, not two things</div>
+        <div class="principle-body">A law of movement is itself a pattern — a structure. A structure is never truly still — it degrades, evolves, gets composed. The distinction is a practical tool for understanding, not an ontological claim.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">No categories, only properties</div>
+        <div class="principle-body">An ECG sensor and TRIBE v2 are the same kind of thing. One has high physical input and low prior knowledge; the other, the inverse. The distinction between sensor and model is quantitative, not qualitative.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">Interfaces compose</div>
+        <div class="principle-body">Multiple interfaces working together form a combined interface with emergent properties. The combination can perceive phenomena invisible to any component alone.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">Causation is resolution-dependent</div>
+        <div class="principle-body">Every interface operates at a particular resolution. At coarse resolution, causal direction appears clear. At finer resolution, it dissolves into coupling and co-arising. The arrow of causation is a property of the observing interface, not of the phenomenon itself.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">Agency is in the conscious shaping</div>
+        <div class="principle-body">Some structure and movement are within our control — which interfaces we build, which compositions we try, which learning we pursue. The rest — the environment, the phenomena, the responses of other systems — we work with but do not control. The framework helps distinguish between the two.</div>
+      </div>
+    </div>
+
+    <div class="label">Open questions</div>
+    <div class="questions">
+      <div class="question">What continuous metrics best characterise an interface</div>
+      <div class="question">What predicts which interface compositions produce emergent properties</div>
+      <div class="question">Whether the structure–movement distinction itself dissolves at finer resolution</div>
+      <div class="question">Whether the natural unit of analysis is the individual, dyad, or group</div>
+      <div class="question">Whether directionality is always resolution-dependent, or fundamental at some scale</div>
+      <div class="question">How to formalise the boundary between what is within our agency and what is not</div>
+    </div>
+  </div>
+
+  <!-- ====== INTERFACES ====== -->
+  <div class="panel" id="interfaces">
+    <p class="section-intro">
+      Interfaces are the structures in this work. All are listed here as a single class, differing on continuous properties rather than category. Metrics are approximate and intended for relative comparison.
+    </p>
+    <div class="iface-list" id="iface-list"></div>
+
+    <div class="label" style="margin-top:36px;">Composition</div>
+    <p class="section-intro">
+      Interfaces combine into composite interfaces with emergent properties. Each example below produces a capability that none of the components possess individually.
+    </p>
+    <div id="comp-list"></div>
+  </div>
+
+  <!-- ====== MOVEMENT ====== -->
+  <div class="panel" id="movement">
+    <p class="section-intro">
+      This tab expands on the second lens. Action is the broad class; learning is the subset that gives a system agency over its own structure. This work focuses on learning because it is a research context, but the framework recognises action as the broader container.
+    </p>
+
+    <div class="label">Action</div>
+    <div class="principles" style="margin-bottom:24px;">
+      <div class="principle">
+        <div class="principle-title">Action operates through existing structure</div>
+        <div class="principle-body">A robot executing a task, a pipeline processing data, a sensor recording a signal. The structure is given; the movement is execution.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">The environment moves too</div>
+        <div class="principle-body">Structure is not changed only by our actions. The environment shifts, phenomena behave in ways we do not control, other systems respond. These external movements can degrade, disrupt, or reconfigure existing structure whether we intend it or not.</div>
+      </div>
+    </div>
+
+    <div class="label">Learning</div>
+    <div class="principles" style="margin-bottom:24px;">
+      <div class="principle">
+        <div class="principle-title">Learning reshapes structure</div>
+        <div class="principle-body">Training a model, calibrating a sensor, refining a processing pipeline, discovering a new composition. Where action operates through existing interfaces, learning changes the interfaces themselves.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">Learning creates new interfaces</div>
+        <div class="principle-body">Designing a new sensor, training a new model, writing a new instrument. Each produces a structure that did not previously exist. The resulting interface is structure; the act of producing it is movement.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">Learning sets direction</div>
+        <div class="principle-body">Choosing what to build, what to measure, which question to pursue. Direction determines which region of the interface space gets explored. It reflects values, constraints, and intuition.</div>
+      </div>
+    </div>
+
+    <div class="label">The loop</div>
+    <div class="principles" style="margin-bottom:24px;">
+      <div class="principle">
+        <div class="principle-title">Structure reveals what movement to make next</div>
+        <div class="principle-body">Every interface has limits — in resolution, bandwidth, or knowledge. Those limits define the frontier. What an interface fails to capture or explain becomes the next target for learning.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">Movement reshapes what structure can see</div>
+        <div class="principle-body">An improved or newly composed interface shifts the frontier, exposing new phenomena and new limits. The cycle continues. This loop — between what we have and what we learn to build — is the engine of progress.</div>
+      </div>
+    </div>
+
+    <div class="label">In this work</div>
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-title">Training TRIBE v2 was learning. The trained model is structure.</div>
+        <div class="principle-body">Meta trained on 1,000+ hours of fMRI data — that process was movement. The result is an interface we can now use and compose with others.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">Using TRIBE v2 as a discovery lens is also learning.</div>
+        <div class="principle-body">When we subtract its predictions from actual brain data to find the cardiac residual, we are using structure to guide movement. The interface enables the learning. The learning may produce a new interface.</div>
+      </div>
+      <div class="principle">
+        <div class="principle-title">Each project below is movement that produces structure.</div>
+        <div class="principle-body">Building the Attention Pulse app, measuring inter-person cardiac sync, training a breath-to-state model. Each creates or refines an interface. Each interface will reveal the next question.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const I = [
+  { id:"ecg", name:"Heart Sensor (ECG)", icon:"♥", c:"#B8432A", bg:"#FBF4F2", bd:"#E8D8D2",
+    one:"Cardiac electrical activity → time series",
+    bw:.6, kn:.1, res:.75, out:.7,
+    bwN:"Continuous single-channel stream from skin electrodes",
+    knN:"Minimal prior knowledge — raw transduction with basic filtering",
+    resN:"~1ms R-peak timing; intracardiac conduction detail lost",
+    outN:"Well-characterised PQRST waveform",
+    inp:"Electrical (cardiac field potentials via skin electrodes)",
+    caus:"Clear sequential structure at this resolution",
+    disc:"Foundation of all cardiac sensing. Accessible via consumer hardware." },
+
+  { id:"eeg", name:"Brain Sensor (EEG)", icon:"⧫", c:"#2B6B8A", bg:"#F0F4F7", bd:"#D0DEE5",
+    one:"Cortical field potentials → voltage traces",
+    bw:.65, kn:.1, res:.5, out:.5,
+    bwN:"Multi-channel (up to 256 electrodes), continuous",
+    knN:"Minimal — spatially summed activity of millions of neurons",
+    resN:"~1ms temporal, ~cm spatial",
+    outN:"Noisy and artifact-prone; requires significant processing",
+    inp:"Electrical (cortical field potentials via scalp electrodes)",
+    caus:"Oscillatory bands visible; single-neuron attribution not possible",
+    disc:"Accessible real-time window into brain dynamics, despite noise." },
+
+  { id:"fmri", name:"fMRI", icon:"◈", c:"#4A5FA0", bg:"#F0F2F7", bd:"#D0D5E2",
+    one:"Blood oxygenation → voxel activations",
+    bw:.85, kn:.15, res:.65, out:.8,
+    bwN:"Full brain volume, thousands of voxels per acquisition",
+    knN:"Hemodynamic response model embedded in measurement",
+    resN:"~mm spatial (high), ~seconds temporal (low)",
+    outN:"High spatial fidelity; temporal ordering unreliable",
+    inp:"Magnetic (blood oxygen level dependent signal)",
+    caus:"Regional correlations clear; temporal direction not resolvable",
+    disc:"Highest spatial resolution for whole-brain imaging. Temporal limitation is fundamental." },
+
+  { id:"ppg", name:"Phone Camera (PPG)", icon:"○", c:"#B06040", bg:"#FBF4F0", bd:"#E5D5CC",
+    one:"Skin blood volume → light absorption changes",
+    bw:.25, kn:.05, res:.3, out:.3,
+    bwN:"Single point, limited by camera frame rate",
+    knN:"Negligible — direct optical measurement",
+    resN:"~30ms (frame rate dependent), noisy",
+    outN:"Sufficient for beat intervals; waveform morphology unreliable",
+    inp:"Optical (reflected light from skin surface)",
+    caus:"Beat-to-beat intervals visible; finer dynamics lost",
+    disc:"Most accessible cardiac interface. No hardware required beyond a phone." },
+
+  { id:"breath", name:"Respiration Sensor", icon:"≋", c:"#2A7A6A", bg:"#F0F6F4", bd:"#C8DDD8",
+    one:"Chest expansion or airflow → respiratory waveform",
+    bw:.35, kn:.05, res:.35, out:.5,
+    bwN:"Single-channel, slow signal (~12–20 breaths per minute)",
+    knN:"Minimal — direct mechanical or flow measurement",
+    resN:"Full breath cycle; alveolar-level detail lost",
+    outN:"Clean waveform for rate and depth",
+    inp:"Mechanical (chest expansion) or acoustic (airflow via microphone)",
+    caus:"Voluntary and involuntary control coexist — causal attribution unclear",
+    disc:"The only common biosignal that is directly and consciously controllable." },
+
+  { id:"eda", name:"Skin Conductance (EDA)", icon:"∿", c:"#A07A20", bg:"#F8F5ED", bd:"#DDD5C0",
+    one:"Sweat gland activity → conductance changes",
+    bw:.2, kn:.05, res:.2, out:.4,
+    bwN:"Single-channel, very slow response latency",
+    knN:"Minimal — direct conductance measurement",
+    resN:"~seconds latency; slow autonomic window",
+    outN:"Clean tonic and phasic components; timing imprecise",
+    inp:"Electrical (skin conductance via finger electrodes)",
+    caus:"Stimulus-response mapping mostly clear, though anticipatory responses occur",
+    disc:"Low-resolution but emotionally informative arousal channel." },
+
+  { id:"text", name:"Language / Text", icon:"¶", c:"#6A5A8A", bg:"#F4F2F8", bd:"#D5D0E0",
+    one:"Meaning ↔ symbolic representation",
+    bw:.9, kn:.85, res:.15, out:.6,
+    bwN:"Can encode virtually any concept expressible in language",
+    knN:"Vast — encodes millennia of shared human understanding",
+    resN:"Extremely compressed; significant meaning lost per word",
+    outN:"High fidelity for logical and narrative content; poor for felt experience",
+    inp:"Symbolic (characters, words, syntactic structure)",
+    caus:"Sequential by construction, but the meaning it represents is not",
+    disc:"Highest-knowledge interface available. Also the most lossy." },
+
+  { id:"audio", name:"Sound / Music", icon:"♪", c:"#7A6545", bg:"#F6F4F0", bd:"#DDD8CC",
+    one:"Air pressure variations → waveform and perceptual experience",
+    bw:.7, kn:.3, res:.7, out:.7,
+    bwN:"Rich temporal and harmonic structure",
+    knN:"Moderate — psychoacoustic processing and cultural context",
+    resN:"~44kHz digital; perceptual resolution context-dependent",
+    outN:"High-fidelity capture; emotional mapping less defined",
+    inp:"Mechanical (air pressure waves via microphone or transducer)",
+    caus:"Temporal sequence is clear; emotional response timing is not",
+    disc:"Primary interface for rhythm. Bridges body and environment." },
+
+  { id:"display", name:"Screen / Display", icon:"▢", c:"#5A5A5A", bg:"#F4F4F4", bd:"#D8D8D5",
+    one:"Digital information → photons → visual perception",
+    bw:.85, kn:.4, res:.8, out:.75,
+    bwN:"Can render virtually any visual content",
+    knN:"Rendering and layout knowledge embedded in display systems",
+    resN:"High spatial resolution (pixels), discrete temporal (frames)",
+    outN:"Precise visual output; viewer attention allocation unknown",
+    inp:"Digital (rendered frames, vector graphics, text)",
+    caus:"Output interface — returns processed information to the physical world",
+    disc:"How the system communicates back. Essential for closing the loop." },
+
+  { id:"tribev2", name:"TRIBE v2", icon:"◆", c:"#6B3FA0", bg:"#F2F0F8", bd:"#D5D0E5",
+    one:"Multimodal stimuli → predicted brain activation patterns",
+    bw:.95, kn:.9, res:.55, out:.75,
+    bwN:"Accepts video, audio, and language simultaneously",
+    knN:"Trained on 1,000+ hours of fMRI data from 720 subjects",
+    resN:"fMRI-level spatial resolution; seconds-level temporal",
+    outN:"70× improvement over prior work; zero-shot transfer to new subjects",
+    inp:"Digital (video frames, audio waveforms, text tokens)",
+    caus:"Predicts expected brain response — residuals reveal what the model cannot account for",
+    disc:"Functions both as a predictive interface and as a discovery lens. What it fails to predict is as informative as what it captures." },
+
+  { id:"cardiac_gating", name:"Cardiac Gating Model", icon:"⟐", c:"#B8432A", bg:"#FBF4F2", bd:"#E8D8D2",
+    one:"Heart-brain coupling patterns → perceptual modulation estimates",
+    bw:.5, kn:.6, res:.65, out:.5,
+    bwN:"Requires ECG + EEG time-locked to the cardiac cycle",
+    knN:"Built on cardiac phase relationships and HEP literature",
+    resN:"Cardiac-cycle resolution (~800ms windows)",
+    outN:"Effect sizes are small but replicable across studies",
+    inp:"Derived (cross-signal timing relationships between heart and brain)",
+    caus:"Direction depends on timescale. Finer resolution reveals coupling; coarser resolution shows a clear arrow.",
+    disc:"Operates at the boundary where causal attribution begins to dissolve." },
+
+  { id:"somatic_marker", name:"Somatic Marker Detector", icon:"◌", c:"#C44040", bg:"#FBF3F3", bd:"#E5D0D0",
+    one:"Body-state signals → decision quality estimates",
+    bw:.45, kn:.55, res:.4, out:.35,
+    bwN:"ECG + EDA, time-locked to decision events",
+    knN:"Grounded in Damasio's somatic marker hypothesis",
+    resN:"Requires sub-second resolution to test causal direction; most datasets are too coarse",
+    outN:"Conceptually well-motivated; empirical validation still early",
+    inp:"Derived (body-state changes around decision points)",
+    caus:"Whether the body reacts to the decision or shapes it remains an open question.",
+    disc:"Formalises the gut feeling. If validated, it implies the body is an active participant in decision-making." },
+
+  { id:"entrainment", name:"Entrainment Model", icon:"∞", c:"#A07A20", bg:"#F8F5ED", bd:"#DDD5C0",
+    one:"Environmental rhythms ↔ body rhythms",
+    bw:.45, kn:.5, res:.5, out:.55,
+    bwN:"Audio rhythm paired with cardiac or respiratory rhythm",
+    knN:"Grounded in oscillator coupling theory and musical cognition research",
+    resN:"Beat-level resolution; leadership assignment often undecidable",
+    outN:"Entrainment is measurable; its functional significance is debated",
+    inp:"Derived (cross-domain rhythm relationships)",
+    caus:"Neither side causes the other. They negotiate a shared rhythm.",
+    disc:"The clearest case where causal language breaks down entirely." },
+
+  { id:"interpersonal", name:"Inter-person Synchrony", icon:"⇌", c:"#B06A20", bg:"#F8F2EA", bd:"#DDD0B8",
+    one:"Person A's physiological signals ↔ Person B's",
+    bw:.5, kn:.45, res:.4, out:.4,
+    bwN:"Dual ECG or EEG streams with conversational context",
+    knN:"Draws on social neuroscience and dyadic physiology research",
+    resN:"Synchrony detectable at ~seconds resolution",
+    outN:"Coupling is detectable; interpretation remains open",
+    inp:"Derived (cross-person signal relationships)",
+    caus:"The dyad is the natural unit. Neither individual causes the other's response.",
+    disc:"Connection has a physiological signature." },
+];
+
+const COMPS = [
+  { p:["ecg","eeg","cardiac_gating"], r:"Heart-Brain Coherence Monitor",
+    d:"ECG provides cardiac timing, EEG provides brain state, and the gating model connects them. The composite reveals how perception modulates with the heartbeat — invisible to any single interface." },
+  { p:["tribev2","ecg","cardiac_gating"], r:"Cardiac Residual Analyser",
+    d:"TRIBE v2 predicts expected brain response. ECG provides cardiac timing. The residual — what the model cannot explain — isolates the heart's modulation of brain activity." },
+  { p:["ecg","eda","somatic_marker"], r:"Somatic Decision Monitor",
+    d:"Heart rate, skin conductance, and the somatic marker model combined. Together they surface body-level responses to decisions that no single channel captures." },
+  { p:["ecg","audio","entrainment"], r:"Cardiac-Musical Coupling Interface",
+    d:"Heart sensor, audio interface, and entrainment model. Reveals how cardiac rhythm synchronises with musical beat — a phenomenon at the body-environment boundary." },
+  { p:["ecg","ecg","interpersonal"], r:"Dyadic Cardiac Link",
+    d:"Two heart sensors and the inter-person synchrony model. Treats a pair of individuals as a single coupled system." },
+  { p:["ppg","display","cardiac_gating"], r:"Attention Pulse (mobile app)",
+    d:"Phone PPG, screen display, and cardiac gating model composed into a tool that lets anyone experience how perception shifts across the cardiac cycle." },
+];
+
+function getI(id) { return I.find(x => x.id === id); }
+
+let expI = null;
+
+function renderIfaces() {
+  const el = document.getElementById('iface-list');
+  el.innerHTML = I.map(i => {
+    const ex = expI === i.id;
+    return `<div class="iface-card" data-id="${i.id}" style="${ex ? `border-color:${i.bd}; background:${i.bg};` : ''}">
+      <div class="iface-top">
+        <div class="iface-icon" style="background:${i.bg}; border:1px solid ${i.bd}; color:${i.c};">${i.icon}</div>
+        <div><div class="iface-name">${i.name}</div><div class="iface-oneliner">${i.one}</div></div>
+      </div>
+      ${ex ? `<div class="metrics">
+        ${[['Input bandwidth',i.bw,i.bwN],['Prior knowledge',i.kn,i.knN],['Resolution',i.res,i.resN],['Output fidelity',i.out,i.outN]].map(([l,v,n]) =>
+          `<div><div class="metric-label">${l}</div><div class="metric-bar"><div class="metric-fill" style="width:${v*100}%;background:${i.c};"></div></div><div class="metric-note">${n}</div></div>`
+        ).join('')}
+      </div>
+      <div class="iface-extra">
+        <div class="extra-label">Input type</div><div class="extra-text">${i.inp}</div>
+        <div class="extra-label">Causation at this resolution</div><div class="extra-text accent" style="color:${i.c};">${i.caus}</div>
+        <div class="extra-label">Significance</div><div class="extra-text">${i.disc}</div>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.iface-card').forEach(c => c.onclick = () => { expI = expI === c.dataset.id ? null : c.dataset.id; renderIfaces(); });
+}
+
+function renderComps() {
+  document.getElementById('comp-list').innerHTML = COMPS.map(c => {
+    const ps = c.p.map(getI).filter(Boolean);
+    return `<div class="comp-card"><div class="comp-pieces">
+      ${ps.map((p,i) => `<span class="comp-tag" style="background:${p.bg};border-color:${p.bd};color:${p.c};">${p.icon} ${p.name.split('(')[0].split('/')[0].trim()}</span>${i<ps.length-1?'<span class="comp-plus">+</span>':''}`).join('')}
+      <span class="comp-arrow">→</span><span class="comp-result">${c.r}</span>
+    </div><div class="comp-desc">${c.d}</div></div>`;
+  }).join('');
+}
+
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById(t.dataset.tab).classList.add('active');
+  expI = null; renderIfaces();
+});
+
+renderIfaces(); renderComps();
+</script>
+</body>
+</html>
