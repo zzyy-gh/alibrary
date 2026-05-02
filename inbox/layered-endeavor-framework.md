@@ -10,7 +10,7 @@ The Layered Endeavor Framework is a small set of structural principles for decom
 
 It generalizes ideas from spec-driven development, layered software architecture, hierarchical multi-agent orchestration, and strategic-alignment cascades into a single substrate that doesn't care whether the "agent" at any given layer is a human, an AI, or a team of both.
 
-The framework is a **philosophy**, not a methodology. It commits to a small number of structural rules (the principles below) and is deliberately silent on everything else (number of layers, direction of flow, cadence, tooling, artifact format). Adopters customize within those rules; the rules themselves are the contract.
+The framework is a **philosophy**, not a methodology. It commits to a small number of structural rules (the principles below) and is deliberately silent on everything else (number of layers, how help is conducted, cadence, tooling, artifact format). Adopters customize within those rules; the rules themselves are the contract.
 
 ---
 
@@ -25,6 +25,8 @@ In principle, a sufficiently capable single agent — a hypothetical AI with unl
 3. **Diagnosability.** When something is wrong, layered structure lets you localize the problem.
 
 This framing has a useful corollary: **as agent capability grows, the optimal number of layers shrinks.** The framework should reduce gracefully toward a single layer when context allows, rather than imposing layers as ceremony.
+
+A note on what matters most when applying the framework. The principles below are small and stable. Almost everything that determines whether an endeavor succeeds under the framework lives in one decision: the choice of layers. Good layer cuts make the framework feel obvious in use; bad cuts surface as the failure modes in §6. Layer design is the art that the framework constrains but does not determine, and it is where careful thought pays off most.
 
 ---
 
@@ -61,28 +63,16 @@ graph LR
 
 ### 3.2 Connections between layers — the help relation
 
-A connection between two layers is a **help relation**: one layer is responsible for helping the other. The help relation *is* the interaction between the two layers — there is no separate concept of "flow" alongside it. The help relation has two project-customizable properties:
+A connection between two layers is a **help relation**: one layer is responsible for helping the other. The helper is responsible *to* the helped layer, not the reverse — the relation is asymmetric in responsibility, with the helper named as such and the helped layer as its help target.
 
-**Direction.** Information can move along the help relation in different patterns:
-
-- **Primarily one-directional** — information moves mostly one way, with occasional return flows.
-- **Bidirectional** — both layers iterate continuously with each other.
-- **Eventually-stable** — directionality is a practical scaffold; over time the layers settle into mutual consistency.
-
-The arrows do not encode hierarchy or seniority. Calling a layer "upper" or "lower" is a visualization convenience, not a claim about importance or authority.
-
-**Content.** What gets carried along the help relation is also a design choice. Common contents:
-
-- **Specifications** — intent, requirements, constraints flowing toward the helper. ("Here is what I need from you.")
-- **Fulfillment and feedback** — work product flowing back, including pushback: infeasibility signals, suggested constraint loosening, opportunities the helped layer didn't know existed. ("Here is what I produced, and here is what I learned that should reshape your spec.")
-- Questions, drafts, partial milestones, signals about confidence or readiness, requests for more context.
-
-Specifications and feedback get named because the helper carries knowledge the helped layer doesn't have, and that knowledge can productively change the spec — but other contents are equally legitimate. The principle is that the help relation is a customizable channel, not a fixed pair of arrows.
+"Help" is intentionally broad. Whatever the helper's mandate and knowledge support — understanding what the helped layer needs, providing it, optimizing it, suggesting improvements, pushing back when reality forces revisions — falls under help. In practice, help shows up as specifications received, work product produced, feedback returned, questions asked, drafts shared, signals about readiness. How help actually happens in a given project is a project choice; the framework only requires that the responsibility be clear.
 
 ```mermaid
 graph LR
-    A[Layer A] <-->|spec, feedback,<br/>questions, drafts, signals...| B[Layer B helps A]
+    A[Layer A] ---|helps| B[Layer B helps A]
 ```
+
+Visualization is a convention, not a claim. Drawing one layer above another, or arrows pointing in any particular direction, does not encode hierarchy, seniority, or importance.
 
 The help relation is the *responsibility-bearing* connection between layers. Layers can also share information without responsibility — for example, a layer can expose a read-only view of itself to another for visibility — but those are not help relations and are covered separately (§5.6).
 
@@ -121,7 +111,11 @@ The one-help rule does two distinct jobs:
 - **Alignment property.** If every non-root layer is aligned with the layer it helps, then by transitivity every layer is aligned with the root. Alignment falls out of the structure for free, with no separate audit mechanism required.
 - **Design discipline.** The constraint forces clean layering. The question "if this layer can only meaningfully help one other, *which one*?" is exactly the question that produces good layer cuts. Without the constraint, layers tend to accumulate diffuse partial relationships and no layer has a sharp mandate.
 
-The tree is rooted at the originating intent for *alignment grounding*, not because the root is "above" the rest in importance.
+Two clarifications follow from the structure:
+
+**No cycles.** Help is asymmetric in responsibility: "A helps B" and "B helps A" are different relations, and the framework prohibits the combination. If A and B helped each other, both would have used their one-help quota on each other and neither would connect to the root, breaking transitive alignment. The same logic forbids longer cycles (A helps B helps C helps A). The tree structure follows directly: one outgoing help edge per non-root layer, every layer reaching the root, no cycles.
+
+**Root is not the most abstract.** The tree is rooted at the originating intent for *alignment grounding*, not because the root is "above" the rest in importance or because root-ward layers must be more abstract. The root is wherever alignment grounds in the endeavor — often abstract (a vision, a research question), sometimes concrete (a fixed constraint, a specific artifact to reverse-engineer). The abstraction gradient seen in the worked examples (§12) is a common pattern, not a structural requirement.
 
 ---
 
@@ -269,7 +263,7 @@ The framework's properties are a direct consequence of its principles:
 | **Transitive alignment** | One-help rule + connection to root → tree → transitivity. |
 | **Free traceability** | Tree structure means every artifact has a path to the root. |
 | **Hydratable** | A layer can start with a minimal output and be enriched over time; the principles drive the enrichment. |
-| **Customizable** | The principles are fixed; help-relation direction and content, layer count, artifact format, and cadence are open. |
+| **Customizable** | The principles are fixed; how help happens, layer count, artifact format, and cadence are open. |
 | **Graceful reduction** | When one agent has full capability and context, the framework collapses to one layer without violating its rules. |
 | **Diagnosable** | Misalignment surfaces at the boundary between two adjacent layers, not in a global pile. |
 | **Exploration-safe** | A layer can experiment freely within its mandate; misalignment surfaces at the help boundary and either propagates as improvement or reverts. |
@@ -283,7 +277,7 @@ Deliberately left open:
 
 - **How many layers.** Domain- and capability-dependent.
 - **Which layers.** The art of layering.
-- **Help-relation direction and content.** Project-customizable.
+- **How help actually happens.** What the help relation looks like in practice — sequence of interactions, who initiates, what gets exchanged when — is project-customizable.
 - **Artifact format.** Markdown specs, code, diagrams, conversations, OKRs — all valid.
 - **Cadence and process.** Continuous, milestone-driven, async, sync — all valid.
 - **Whether agents are humans, AI, or hybrid.** Symmetric by design.
@@ -321,6 +315,8 @@ graph BT
 | Technical | How we build it | Engineering, architecture, ops | Architecture, code, infrastructure |
 
 Example feedback along a help relation: the technical layer discovers that a real-time feature in the product spec would require a 10x infrastructure investment. It surfaces this back to the product layer, which can revise the user story (eventual consistency may be acceptable), which may in turn surface to the business layer if the change affects positioning.
+
+*Relationship to spec-driven development.* This example maps naturally onto SDD practice. Each layer's output is a spec for the layer it helps — the product layer's specs and user stories are exactly what an SDD workflow produces between product and engineering, and the framework generalizes the same idea up the tree (vision specs that ground business plans, business specs that ground product). SDD's spec→plan→tasks→implement flow can be read as a particular layering of the technical layer; the framework gives the broader structure. Adopters using SDD already get most of the framework's lower-half mechanics; the framework adds the higher-level layers and the alignment guarantee across them.
 
 ### 12.2 Research program
 
@@ -374,7 +370,7 @@ Things the framework deliberately leaves for adopters and for future iteration:
 - **Endeavor** — Any complex undertaking the framework is applied to: a project, company, research program, operation.
 - **Layer** — A unit of the endeavor with a single mandate, defined knowledge, an output, and at most one help target.
 - **Mandate** — The scoped responsibility a layer owns exclusively.
-- **Help relation** — The connection between a layer and its help target. The responsibility-bearing interaction between two layers, with project-customizable direction (one-directional, bidirectional, eventually-stable) and content (specifications, feedback, questions, drafts, milestone signals, etc.). Forms the tree.
+- **Help relation** — The asymmetric responsibility-bearing connection between a layer and its help target. "Help" covers whatever the helper's mandate and knowledge support: understanding what the helped layer needs, providing it, optimizing, suggesting improvements, pushing back when reality forces revisions. How help actually happens is a project choice. The collection of help relations forms the tree.
 - **Help target** — The one other layer a non-root layer is responsible for helping.
 - **Grouping** — Internal organization of a layer's content, possibly corresponding to splits in its outputs.
 - **Projection** — A scoped, often read-only view of a layer exposed to another consumer for visibility, distinct from a help relation.
